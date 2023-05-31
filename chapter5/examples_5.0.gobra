@@ -1,0 +1,17 @@
+package chapter5 
+
+ghost
+decreases x
+pure func More(x int) int {
+	return x <= 0 ? 1 : More(x - 2) + 3
+}
+
+// Gobra has no specific notation for lemmas. Instead, they can be written
+// as ghost functions. When possible, lemmas are translated to pure functions.
+// This allows pure functions to call them if need be. However, due to the severe
+// limitations that Gobra currently imposes on pure functions, they sometimes will
+// be translated to impure functions.
+ghost
+ensures x < More(x)
+decreases
+func Increasing(x int)

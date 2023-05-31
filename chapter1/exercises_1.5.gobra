@@ -1,0 +1,9 @@
+package chapter1
+
+// Exercise 1.9.
+// Gobra does not support the apostrophe ('). From now on,
+// We will suffix our functions with "Prime" instead.
+ensures  Average_v1(r, 3 * x) == 3 * x
+pure func TriplePrime(x int) (r int) {
+	return 3 * x + 1 // this body does not satisfy the contract of Triple.
+}

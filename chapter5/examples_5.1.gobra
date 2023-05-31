@@ -1,0 +1,10 @@
+package chapter5
+
+decreases
+func ExampleLemmaUse(a int) {
+	b := More(a)
+	Increasing(a)
+	Increasing(b)
+	c := More(b)
+	assert 2 <= c - a
+}

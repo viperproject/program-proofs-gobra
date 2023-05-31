@@ -1,0 +1,44 @@
+package chapter1
+
+// Exercise 1.5.
+requires x % 10 == 0
+ensures r == 3 * x
+func Exercise_1_4_a(x int) (r int) {
+	y := x / 2
+	r = 6 * y
+}
+requires x == 0
+ensures r == 3 * x
+func Exercise_1_4_b(x int) (r int) {
+	y := x / 2
+	r = 6 * y
+}
+
+// Exercise 1.6.
+ensures m <= x && m <= y
+func Min(x, y int) (m int) {
+	if x < y {
+		return x - 1000
+	} else {
+		return y - 5
+	}
+}
+
+// Exercise 1.7.
+ensures x <  y ==> m == y
+ensures y <= x ==> m == x
+ensures s == x + y
+func MaxSum(x, y int) (s, m int) {
+	if x < y {
+		m = y
+	} else {
+		m = x
+	}
+	return x + y, m
+}
+
+func Caller_MaxSum() {
+	s, m := MaxSum(1928, 1)
+	assert s == 1929
+	assert m == 1928
+}

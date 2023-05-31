@@ -1,0 +1,87 @@
+package chapter3
+
+// Exercise 3.13.
+
+requires 0 <= a
+decreases a
+func Outer_v1(a int) {
+	if a != 0 {
+		b := RequiredStudyTime(a - 1)
+		Inner_v1(a, b)
+	}
+}
+
+requires 1 <= a
+requires 0 <= b
+decreases a, b
+func Inner_v1(a, b int) {
+	if b == 0 {
+		Outer_v1(a - 1)
+	} else {
+		Inner_v1(a, b - 1)
+	}
+}
+
+// Exercise 3.14.
+
+requires 0 <= a
+decreases a, 0
+func Outer_v2(a int) {
+	if a != 0 {
+		b := RequiredStudyTime(a - 1)
+		Inner_v2(a - 1, b)
+	}
+}
+
+requires 0 <= a
+requires 0 <= b
+decreases a, 1, b
+func Inner_v2(a, b int) {
+	if b == 0 {
+		Outer_v2(a)
+	} else {
+		Inner_v2(a, b - 1)
+	}
+}
+
+// Exercise 3.15.
+
+requires 0 <= n
+ensures  0 <= r && r <= n + 1
+decreases n, 1
+func F_v3(n int) (r int) {
+	if n == 0 {
+		return 1
+	} else {
+		return n - M_v3(F_v3(n - 1))
+	}
+}
+
+requires 0 <= n
+ensures  0 <= r && r <= n
+decreases n, 0
+func M_v3(n int) (r int) {
+	if n == 0 {
+		return 0
+	} else {
+		return n - F_v3(M_v3(n - 1))
+	}
+}
+
+// Exercise 3.17.
+
+ghost
+requires 0 <= x
+requires 0 <= y
+decreases x % 2 == 1, x % 2 == 1 ? x : 1000 - x
+func F(x int, y int) int {
+	if 1000 <= x {
+		return x + y
+	} else if x % 2 == 0 {
+		return F(x + 2, y + 1)
+	} else if x < 6 {
+		return F(2 * y, y)
+	} else {
+		return F(x - 4, y + 3)
+	}
+}

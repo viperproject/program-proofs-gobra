@@ -1,0 +1,63 @@
+package chapter4
+
+type Op adt {
+	Add{}
+	Mul{}
+}
+
+type Expr adt {
+	Const{
+		num int
+	}
+
+	Var{
+		name string
+	}
+
+	ENode{
+		op Op
+		args List
+	}
+}
+
+type List adt {
+	Nil{}
+
+	Cons{
+		head Expr
+		tail List
+	}
+}
+
+// Mathematical maps from type X to type Y in Gobra are represented by type `dict[X]Y`.
+ghost
+decreases len(e)
+pure func Eval(e Expr, env dict[string]int) (r int) {
+	return match e {
+		case Const{?c}:
+			c
+		case Var{?s}:
+			s in domain(env) ? env[s] : 0
+		case ENode{?op, ?args}:
+			EvalList(args, op, env)
+	}
+}
+
+ghost
+decreases len(args)
+pure func EvalList(args List, op Op, env dict[string]int) int {
+	return match args {
+		case Nil{}:
+			match op {
+				case Add{}: 0
+				case Mul{}: 1
+			}
+		case Cons{?e, ?tail}:
+			let v0 := Eval(e, env) in
+			let v1 := EvalList(tail, op, env) in
+			match op {
+				case Add{}: v0 + v1
+				case Mul{}: v0 * v1
+			}
+	}
+}

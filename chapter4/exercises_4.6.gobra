@@ -1,0 +1,55 @@
+package chapter4
+
+// Exercise 4.9.
+ghost
+decreases len(e)
+pure func GoodEnv(e Expr, env dict[string]int) bool {
+	return match e {
+		case Const{_}: true
+		case Var{?s}: s in domain(env)
+		case ENode{_, ?args}:
+			GoodEnvList(args, env)
+	}
+}
+
+ghost
+decreases len(l)
+pure func GoodEnvList(l List, env dict[string]int) bool {
+	return match l {
+		case Nil{}: true
+		case Cons{?e, ?tail}:
+			GoodEnv(e, env) && GoodEnvList(tail, env)
+	}
+}
+
+// Exercise 4.10.
+ghost
+requires  GoodEnv(e, env)
+decreases len(e)
+pure func Eval_v2(e Expr, env dict[string]int) (r int) {
+	return match e {
+		case Const{?c}: c
+		case Var{?s}: env[s]
+		case ENode{?op, ?args}: EvalList_v2(args, op, env)
+	}
+}
+
+ghost
+requires  GoodEnvList(args, env)
+decreases len(args)
+pure func EvalList_v2(args List, op Op, env dict[string]int) int {
+	return match args {
+		case Nil{}:
+			match op {
+				case Add{}: 0
+				case Mul{}: 1
+			}
+		case Cons{?e, ?tail}:
+			let v0 := Eval_v2(e, env) in
+			let v1 := EvalList_v2(tail, op, env) in
+			match op {
+				case Add{}: v0 + v1
+				case Mul{}: v0 * v1
+			}
+	}
+}

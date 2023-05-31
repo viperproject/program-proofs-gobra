@@ -1,0 +1,25 @@
+package chapter1
+
+// Exercise 1.11.
+pure func F() int {
+	return 29
+}
+
+// Uncommenting the postcondition below makes the last assertion in Caller
+// succeed.
+// ensures r == 29
+func M() (r int) {
+	r = 29
+	return r
+}
+
+func Caller() {
+	a := F()
+	b := M()
+	assert a == 29
+	// The line below fails. Similarly to Dafny, Gobra does not inspect
+	// the bodies of called methods - the only information known about
+	// called methods is its contract. Thus, we need to add a contract
+	// to M() that describes its return value.
+	// assert b == 29
+}

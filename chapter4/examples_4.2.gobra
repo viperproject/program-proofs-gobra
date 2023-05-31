@@ -1,0 +1,27 @@
+package chapter4
+
+ghost
+pure func (t BYTree) IsNode() bool {
+	return match t {
+		case BlueLeaf{}: false
+		case YellowLeaf{}: false
+		case Node{_, _}: true
+	}
+}
+
+ghost
+// The discriminator for variant X is called 'isX'.
+requires t.isNode
+pure func (t BYTree) GetLeft() (r BYTree) {
+	return match t {
+		case Node{?left, _}: left
+	}
+}
+
+ghost
+ensures 0 <= r
+pure func (t BYTree) BlueCount_v2() (r int) {
+	return t.isBlueLeaf ?
+		1 :
+		(t.isYellowLeaf ? 0 : t.left.BlueCount_v2() + t.right.BlueCount_v2())
+}

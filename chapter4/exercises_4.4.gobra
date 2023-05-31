@@ -1,0 +1,11 @@
+package chapter4
+
+// Exercise 4.6.
+ghost
+decreases len(t)
+pure func (t ColoredTree) IsSwedishColoredTree() bool {
+	return match t {
+		case Leaf{?c}: c.IsSwedishFlagColor()
+		case NodeColored{?l, ?r}: l.IsSwedishColoredTree() && r.IsSwedishColoredTree()
+	}
+}

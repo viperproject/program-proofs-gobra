@@ -1,0 +1,12 @@
+package chapter5
+
+// Gobra does not try to prove lemmas by induction automatically.
+// As such, all proofs need to be written down explicitly.
+ghost
+ensures x < More(x)
+decreases x
+func IncreasingProof(x int) {
+	if x > 0 {
+		IncreasingProof(x-2)
+	}
+}

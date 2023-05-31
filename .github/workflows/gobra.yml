@@ -1,0 +1,67 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+# Copyright (c) 2022 ETH Zurich.
+
+name: Verify the examples and exercises in Gobra
+
+on:
+  push:
+    branches:
+    - master
+  pull_request: # run this workflow on every pull_request
+
+env:
+  # includePaths: ''
+  assumeInjectivityOnInhale: '0'
+  parallelizeBranches: '0'
+  checkConsistency: '1'
+  imageVersion: 'latest'
+  mceMode: 'off'
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the current repository
+        uses: actions/checkout@v3
+      - name: Verify chapter 1
+        uses: viperproject/gobra-action@main
+        with:
+          packages: 'chapter1'
+          timeout: 3m
+          # includePaths: ${{ env.includePaths }}
+          assumeInjectivityOnInhale: ${{ env.assumeInjectivityOnInhale }}
+          checkConsistency: ${{ env.checkConsistency }}
+          imageVersion: ${{ env.imageVersion }}
+          mceMode: ${{ env.mceMode }}
+      - name: Verify chapter 3
+        uses: viperproject/gobra-action@main
+        with:
+          packages: 'chapter3'
+          timeout: 3m
+          assumeInjectivityOnInhale: ${{ env.assumeInjectivityOnInhale }}
+          checkConsistency: ${{ env.checkConsistency }}
+          imageVersion: ${{ env.imageVersion }}
+          mceMode: ${{ env.mceMode }}
+      - name: Verify chapter 4
+        uses: viperproject/gobra-action@main
+        with:
+          packages: 'chapter4'
+          timeout: 3m
+          assumeInjectivityOnInhale: ${{ env.assumeInjectivityOnInhale }}
+          checkConsistency: ${{ env.checkConsistency }}
+          imageVersion: ${{ env.imageVersion }}
+          mceMode: ${{ env.mceMode }}
+      - name: Verify chapter 5
+        uses: viperproject/gobra-action@main
+        with:
+          packages: 'chapter5'
+          timeout: 3m
+          # includePaths: ${{ env.includePaths }}
+          assumeInjectivityOnInhale: ${{ env.assumeInjectivityOnInhale }}
+          checkConsistency: ${{ env.checkConsistency }}
+          imageVersion: ${{ env.imageVersion }}
+          mceMode: ${{ env.mceMode }}
+
