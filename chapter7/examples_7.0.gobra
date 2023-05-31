@@ -1,0 +1,63 @@
+package chapter7
+
+/*
+ * Return type for pure lemmas.
+ */
+type Unit struct{}
+
+type Unary adt {
+
+	Zero {}
+
+   /*
+	* In Gobra, the term 'pred' is a reserved keyword used to declare a predicate.
+	* A Gobra predicate should not be confused with a Dafny predicate. Gobra's
+	* predicates correspond to predicates in separation logic, which are used to abstract over
+	* resources like heap locations. In Dafny, a predicate corresponds to a function
+	* that returns a boolean value. To avoid conflicts, we give the name 'pre' to the parameter
+	* of 'Succ'.
+	*/
+
+	Suc {
+		pre Unary
+	}
+}
+
+ghost
+ensures r >= 0
+decreases len(x)
+pure func (x Unary) UnaryToNat() (r int) {
+	return match x {
+		case Zero{}:
+			0
+		case Suc{?pre}:
+			1 + pre.UnaryToNat()
+	}
+}
+
+ghost
+requires n >= 0
+decreases n
+pure func NatToUnary(n int) Unary {
+	return n == 0 ? Zero{} : Suc{NatToUnary(n-1)}
+}
+
+/*
+ * To make the code easier to read, from now on we only declare pure lemmas
+ * if they are called from pure functions in the examples from the book/
+ */
+
+ghost
+requires n >= 0
+ensures NatToUnary(n).UnaryToNat() == n
+ensures NatToUnary(x.UnaryToNat()) == x
+decreases n + len(x)
+func NatUnaryCorrespondence(n int, x Unary) {
+	if x != Zero{} && n != 0 {
+		NatUnaryCorrespondence(n-1, x.pre)
+	} else if x != Zero{} && n == 0 {
+		NatUnaryCorrespondence(n, x.pre)
+	} else if x == Zero{} && n != 0 {
+		NatUnaryCorrespondence(n-1, x)
+	}
+}

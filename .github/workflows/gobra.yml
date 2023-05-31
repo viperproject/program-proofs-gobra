@@ -64,4 +64,23 @@ jobs:
           checkConsistency: ${{ env.checkConsistency }}
           imageVersion: ${{ env.imageVersion }}
           mceMode: ${{ env.mceMode }}
-
+      - name: Verify chapter 6
+        uses: viperproject/gobra-action@main
+        with:
+          packages: 'chapter6'
+          timeout: 3m
+          # includePaths: ${{ env.includePaths }}
+          assumeInjectivityOnInhale: ${{ env.assumeInjectivityOnInhale }}
+          checkConsistency: ${{ env.checkConsistency }}
+          imageVersion: ${{ env.imageVersion }}
+          mceMode: ${{ env.mceMode }}
+      - name: Verify chapter 7
+        uses: viperproject/gobra-action@main
+        with:
+          packages: 'chapter7'
+          timeout: 3m
+          # includePaths: ${{ env.includePaths }}
+          assumeInjectivityOnInhale: ${{ env.assumeInjectivityOnInhale }}
+          checkConsistency: ${{ env.checkConsistency }}
+          imageVersion: ${{ env.imageVersion }}
+          mceMode: ${{ env.mceMode }}
