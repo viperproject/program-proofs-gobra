@@ -9,7 +9,7 @@ name: Verify the examples and exercises in Gobra
 on:
   push:
     branches:
-    - master
+    - main
   pull_request: # run this workflow on every pull_request
 
 env:
