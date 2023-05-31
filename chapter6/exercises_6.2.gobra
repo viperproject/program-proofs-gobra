@@ -1,0 +1,69 @@
+package chapter6
+
+// Exercise 6.2.: The implementation of the lemma "SnocAppend" can be found in examples_6.6.gobra.
+
+// Exercise 6.3.: The implementation of the lemma "AppendNil" can be found in examples_6.2.gobra.
+
+// Exercise 6.4.: The implementation of the lemma "AppendAssociative" can be found in examples_6.2.gobra.
+
+// Exercise 6.5.
+
+ghost
+requires a.Length() === c.Length()
+requires a.Append(b) == c.Append(d)
+ensures  a == c && b == d
+decreases len(a)
+pure func AppendDecomposition(a List, b List, c List, d List) Unit {
+	return match a {
+		case Nil{}:
+			Unit{}
+		case Cons{_, ?tail}:
+			AppendDecomposition(tail, b, c.tail, d)
+	}
+}
+
+// Exercise 6.6.
+
+/*
+ * F is left abstract, i.e., no body is provided.
+ * Nonetheless, Gobra can still reason about the values
+ * returned by this function with the lemmas below.
+ */
+pure func F(x, y int) int
+
+/*
+ * Gobra does not support defining arbitrary constants with the 'const'
+ * keyword from Go, because a concrete value must be provided when declaring
+ * the constant. Instead, we declare them as body-less (a.k.a. abstract)
+ * pure functions
+ */
+decreases _ // termination is assumed, otherwise we cannot prove termination of LEqualsR.
+pure func L() int
+
+decreases _
+pure func R() int
+
+/*
+ * The following lemmas are provided without a body, and thus, are not proved.
+ * As such, these lemmas represent assumptions about the behaviour of F.
+ */
+ghost
+ensures F(L(), x) == x
+decreases _
+func LeftUnit(x int)
+
+ghost
+ensures F(x, R()) == x
+decreases _
+func RightUnit(x int)
+
+ghost
+ensures L() == R()
+decreases
+func LEqualsR() {
+	LeftUnit(R())
+	assert F(L(), R()) == R()
+	RightUnit(L())
+	assert F(L(), R()) == L()
+	return
+}
