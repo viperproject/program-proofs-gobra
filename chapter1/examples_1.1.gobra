@@ -1,0 +1,8 @@
+package chapter1
+
+func Truple_v2(x int) (r int) {
+	y := 2 * x
+	r = x + y
+	assert r == 3 * x
+	return r
+}

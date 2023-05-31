@@ -19,3 +19,11 @@
 
 # Go workspace file
 go.work
+
+# Gobra
+*.log    
+*.smt2    
+*.internal  
+
+# Other
+*.DS_Store    

@@ -1,0 +1,119 @@
+package chapter5
+
+// Exercise 5.11.
+
+type BYTree adt {
+	BlueLeaf{}
+
+	YellowLeaf{}
+
+	Node{
+		left BYTree
+		right BYTree
+	}
+}
+
+ghost
+decreases len(t)
+pure func (t BYTree) ReverseColors() BYTree {
+	return match t {
+		case BlueLeaf{}:
+			YellowLeaf{}
+		case YellowLeaf{}:
+			BlueLeaf{}
+		case Node{?l, ?r}:
+			let lr := l.ReverseColors() in
+			let rr := r.ReverseColors() in
+			Node{lr, rr}
+	}
+}
+
+ghost
+ensures b.ReverseColors().ReverseColors() == b
+func ReverseColorsInvolution(b BYTree) {
+	match b {
+		case BlueLeaf{}:
+		case YellowLeaf{}:
+		case Node{?l, ?r}:
+			ReverseColorsInvolution(l)
+			ReverseColorsInvolution(r)
+	}
+}
+
+// Exercise 5.12.
+
+ghost
+decreases len(t)
+pure func (t BYTree) LeafCount() int {
+	return match t {
+		case BlueLeaf{}:
+			1
+		case YellowLeaf{}:
+			1
+		case Node{?l, ?r}:
+			l.LeafCount() + r.LeafCount()
+	}
+}
+
+ghost
+ensures   b.LeafCount() == b.ReverseColors().LeafCount()
+decreases len(b)
+func PreservesLeafCount(b BYTree) {
+	match b {
+		case BlueLeaf{}:
+		case YellowLeaf{}:
+		case Node{?l, ?r}:
+			PreservesLeafCount(l)
+			PreservesLeafCount(r)
+	}
+}
+
+// Exercise 5.13.
+
+ghost
+decreases len(t)
+pure func (t BYTree) Oceanize() BYTree {
+	return match t {
+		case BlueLeaf{}: BlueLeaf{}
+		case YellowLeaf{}: BlueLeaf{}
+		case Node{?l, ?r}: Node{l.Oceanize(), r.Oceanize()}
+	}
+}
+
+ghost
+ensures   b.Oceanize() == b.Oceanize().Oceanize()
+decreases len(b)
+func OceanizeIdempotent(b BYTree) {
+	match b {
+		case BlueLeaf{}:
+		case YellowLeaf{}:
+		case Node{?l, ?r}:
+			OceanizeIdempotent(l)
+			OceanizeIdempotent(r)
+	}
+}
+
+// Exercise 5.14.
+
+ghost
+ensures 0 <= r
+pure func (t BYTree) BlueCount() (r int) {
+	return match t {
+		case BlueLeaf{}: 1
+		case YellowLeaf{}: 0
+		case Node{?left, ?right}: left.BlueCount() + right.BlueCount()
+	}
+}
+
+ghost
+ensures   b.BlueCount() <= b.Oceanize().BlueCount()
+decreases len(b)
+func OceanizeMonoticBlueCount(b BYTree) {
+	match b {
+		case BlueLeaf{}:
+		case YellowLeaf{}:
+		case Node{?l, ?r}:
+			OceanizeMonoticBlueCount(l)
+			OceanizeMonoticBlueCount(r)
+	}
+}

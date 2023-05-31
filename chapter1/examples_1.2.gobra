@@ -1,0 +1,14 @@
+package chapter1
+
+// By default, Gobra only reports the first error it finds. As such,
+// uncommenting all three assertions below will cause Gobra to report
+// an error only in the first one. This is unlike Dafny, which would
+// report an error in the first and third assertions.
+func Truple_v3(x int) (r int) {
+	y := 2 * x
+	r = x + y
+	// assert r == 10 * x // uncommenting this line cases a verification error
+	// assert r < 5
+	// assert false // uncommenting this line cases a verification error
+	return r
+}

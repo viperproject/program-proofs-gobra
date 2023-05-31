@@ -1,0 +1,40 @@
+package chapter3
+
+// Exercise 3.7.
+
+// renamed function to avoid name clashes
+requires 0 <= n
+ensures  0 <= r && r <= n
+decreases n
+func G_3_7(n int) (r int) {
+	if n == 0 {
+		r = 0
+	} else {
+		r = n - G_3_7(G_3_7(n - 1))
+	}
+	return r
+}
+
+// Exercise 3.8.
+
+decreases !b
+func M(x int, b bool) int {
+	if b {
+		return x
+	} else {
+		return M(x + 25, true)
+	}
+}
+
+// Exercise 3.9.
+
+decreases x, b
+func N(x, y int, b bool) int {
+	if x <= 0 || y <= 0 {
+		return x + y
+	} else if b {
+		return N(x, y + 3, !b)
+	} else {
+		return N(x - 1, y, true)
+	}
+}
