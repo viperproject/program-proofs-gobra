@@ -1,0 +1,75 @@
+package chapter8
+
+/*
+ * In Go, one can import packages to access the definitions of those packages.
+ * In Gobra, importing a package also brings into context the public ghost definitions.
+ * However, Gobra must be instructed where to look for packages to import (similar to
+ * how one can typically chose the include path in C compilers).
+ * The following annotation tells Gobra to look into ".." to resolve imports.
+ */
+
+// ##(-I ../)
+
+/*
+ * The following allows us to access the definitions of List from chapter 6.
+ */
+import ch6 "chapter6"
+
+/** Section 8.0.0. **/
+
+ghost
+decreases len(xs)
+/*
+ * Go does not allow defining methods on imported types. Because of that,
+ * we pass xs as a regular input parameter instead of passing it as the receiver.
+ */
+pure func Ordered(xs ch6.List) bool {
+	return match xs {
+		case ch6.Nil{}:
+			true
+		case ch6.Cons{?head, ch6.Nil{}}:
+			true
+		case ch6.Cons{?head, ch6.Cons{?y, _}}:
+			head <= y && Ordered(xs.tail)
+	}
+}
+
+ghost
+requires i >= 0 && j >= 0
+requires Ordered(xs) && i <= j && j < xs.Length()
+ensures xs.At(i) <= xs.At(j)
+decreases len(xs)
+func AllOrdered(xs ch6.List, i int, j int) {
+	if i != 0 {
+		AllOrdered(xs.tail, i-1, j-1)
+	} else if i != j {
+		AllOrdered(xs.tail, 0, j-1)
+	}
+}
+
+/** Section 8.0.1. **/
+
+ghost
+ensures i >= 0
+decreases len(xs)
+pure func Count(xs ch6.List, p int) (i int) {
+	return match xs {
+		case ch6.Nil{}:
+			0
+		case ch6.Cons{?head, ?tail}:
+			(head == p ? 1 : 0) + Count(tail, p)
+	}
+}
+
+/** Section 8.0.2. **/
+
+ghost
+decreases len(xs)
+pure func Project(xs ch6.List, p int) ch6.List {
+	return match xs {
+		case ch6.Nil{}:
+			ch6.Nil{}
+		case ch6.Cons{?head, ?tail}:
+			head == p ? ch6.Cons{head, Project(tail, p)} : Project(tail, p)
+	}
+}
