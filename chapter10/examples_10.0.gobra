@@ -1,0 +1,32 @@
+package chapter10
+
+/*
+ * Go and Gobra do not provide support for modules, as available in Dafny.
+ * Go does however support alternative idioms to ensures abstraction
+ * using packages and interfaces. We will not cover these features for now,
+ * as they require an intermediate knowledge of Gobra. In these examples, we
+ * will show a simple translation that does not make use of advanced abstraction
+ * features.
+ */
+
+ghost
+decreases
+pure func IsMin(y int, s mset[int]) bool {
+	return y in s && forall x int :: x in s ==> y <= x
+}
+
+/** Auxiliary Definitions **/
+
+/*
+ * The lemmas in this chapter are implemented as pure functions because
+ * there are pure functions in section 10.3.2. that depend on these lemmas.
+ */
+
+type Unit struct{}
+
+ghost
+requires b
+decreases
+pure func asserting(b bool) Unit {
+	return Unit{}
+}

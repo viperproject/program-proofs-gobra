@@ -1,0 +1,13 @@
+package chapter10
+
+type PQueue = BraunTree
+
+type BraunTree adt {
+	Leaf {}
+
+	Node {
+		x int
+		left BraunTree
+		right BraunTree
+	}
+}

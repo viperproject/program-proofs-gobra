@@ -1,0 +1,294 @@
+package chapter10
+
+/** Section 10.2.0. **/
+
+ghost
+decreases len(pq)
+pure func (pq PQueue) Valid() bool {
+	return pq.IsBinaryHeap() && pq.IsBalanced()
+}
+
+ghost
+decreases len(pq)
+pure func (pq PQueue) IsBinaryHeap() bool {
+	return match pq {
+		case Leaf{}:
+			true
+		case Node{?x, ?left, ?right}:
+			left.IsBinaryHeap() && right.IsBinaryHeap() &&
+			(left == Leaf{} || x <= left.x) &&
+			(right == Leaf{} || x <= right.x)
+	}
+}
+
+ghost
+decreases len(pq)
+pure func (pq PQueue) IsBalanced() (res bool) {
+	return match pq {
+		case Leaf{}:
+			true
+		case Node{_, ?left, ?right}:
+			left.IsBalanced() && right.IsBalanced() &&
+			(let L := len(left.Elements()) in
+			let R := len(right.Elements()) in
+			L == R || L == R + 1)
+	}
+}
+
+ghost
+decreases len(pq)
+pure func (pq PQueue) Elements() mset[int] {
+	return match pq {
+		case Leaf{}:
+			mset[int]{}
+		case Node{?x, ?left, ?right}:
+			mset[int]{x} union left.Elements() union right.Elements()
+	}
+}
+
+/** Section 10.2.1. **/
+
+ghost
+decreases
+pure func Empty() PQueue {
+	return Leaf{}
+}
+
+ghost
+decreases
+pure func (pq PQueue) IsEmpty() bool {
+	return pq == Leaf{}
+}
+
+ghost
+ensures let pq := Empty() in
+	pq.Valid() && pq.Elements() == mset[int]{}
+decreases
+pure func EmptyCorrect() Unit {
+	return Unit{}
+}
+
+ghost
+requires pq.Valid()
+ensures pq.IsEmpty() == (pq.Elements() == mset[int]{})
+decreases len(pq)
+pure func (pq PQueue) IsEmptyCorrect() Unit {
+	return Unit{}
+}
+
+/** Section 10.2.2. **/
+
+ghost
+decreases len(pq)
+pure func (pq PQueue) Insert(y int) PQueue {
+	return match pq {
+		case Leaf{}:
+			Node{y, Leaf{}, Leaf{}}
+		case Node{?x, ?left, ?right}:
+			y < x ? Node{y, right.Insert(x), left} : Node{x, right.Insert(y), left}
+	}
+}
+
+ghost
+requires pq.Valid()
+ensures let pqPrime := pq.Insert(y) in
+	pqPrime.Valid() &&
+	pqPrime.Elements() == pq.Elements() union mset[int]{y}
+decreases len(pq)
+pure func (pq PQueue) InsertCorrect(y int) Unit {
+	return match pq {
+		case Leaf{}:
+			Unit{}
+		case Node{?x, ?l, ?r}:
+			let pqPrime := pq.Insert(y) in
+			let min := y < x ? y : x in
+			let max := y < x ? x : y in
+			(let newRight := r.Insert(max) in
+			let _ := asserting(pqPrime == Node{min, newRight, l}) in
+			let _ := asserting(
+				let L := len(l.Elements()) in
+				let R := len(r.Elements()) in
+				L == R || L == R + 1) in
+			let _ := r.InsertCorrect(max) in
+			let _ := asserting(newRight.Valid()) in
+			let _ := asserting(newRight.IsBalanced()) in
+			let _ := asserting(l.IsBalanced()) in
+			let _ := asserting(
+				let Lprime := len(newRight.Elements()) in
+				let Rprime := len(l.Elements()) in
+				Lprime == Rprime || Lprime == Rprime + 1) in
+			let _ := asserting(pqPrime.IsBalanced()) in
+			asserting(pqPrime.IsBinaryHeap()))
+	}
+}
+
+/** Section 10.2.3. **/
+
+type PairOfIntPQueue struct {
+	left int
+	right PQueue
+}
+
+ghost
+requires pq.Valid() && !pq.IsEmpty()
+decreases len(pq)
+pure func (pq PQueue) RemoveMin() PairOfIntPQueue {
+	return PairOfIntPQueue{pq.x, pq.DeleteMin()}
+}
+
+ghost
+requires pq.Valid() && !pq.IsEmpty()
+ensures let pair := pq.RemoveMin() in
+	let y := pair.left in
+	let pqPrime := pair.right in
+	pqPrime.Valid() &&
+	IsMin(y, pq.Elements()) &&
+	pqPrime.Elements() union mset[int]{y} == pq.Elements()
+decreases len(pq)
+pure func (pq PQueue) RemoveMinCorrect() Unit {
+	return match pq {
+		case Leaf{}:
+			Unit{} // this case is unreachable
+		case Node{?x, ?l, ?r}:
+			let pair := pq.RemoveMin() in
+			let _ := pq.DeleteMinCorrect() in
+			let y := pair.left in
+			let pqPrime := pair.right in
+			let _ := asserting(y == x) in
+			let _ := asserting(pq.Elements() == mset[int]{x} union l.Elements() union r.Elements()) in
+			let minL := l == Leaf{} ? x : l.RemoveMin().left in
+			let minR := r == Leaf{} ? x : r.RemoveMin().left in
+			let _ := l == Leaf{} ? Unit{} : l.RemoveMinCorrect() in
+			let _ := r == Leaf{} ? Unit{} : r.RemoveMinCorrect() in
+			let _ := asserting(y <= minL) in
+			let _ := asserting(y <= minR) in
+			let _ := l != Leaf{} ? asserting(IsMin(minL, l.Elements())) : Unit{} in
+			let _ := r != Leaf{} ? asserting(IsMin(minR, r.Elements())) : Unit{} in
+			asserting(IsMin(y, pq.Elements()))
+	}
+}
+
+/** Section 10.2.4. **/
+
+ghost
+requires pq.IsBalanced() && !pq.IsEmpty()
+decreases len(pq)
+pure func (pq PQueue) DeleteMin() PQueue {
+	return pq.left == Leaf{} || pq.right == Leaf{} ?
+		pq.left :
+		pq.left.x <= pq.right.x ?
+			Node{pq.left.x, pq.right, pq.left.DeleteMin()} :
+			Node{pq.right.x, pq.right.ReplaceRoot(pq.left.x), pq.left.DeleteMin()}
+}
+
+ghost
+requires pq.Valid() && pq != Leaf{}
+ensures let pqPrime := pq.DeleteMin() in
+	pqPrime.Valid() &&
+	pqPrime.Elements() union mset[int]{pq.x} == pq.Elements()
+decreases len(pq)
+pure func (pq PQueue) DeleteMinCorrect() Unit {
+	return let pqPrime := pq.DeleteMin() in
+		pq.left == Leaf{} || pq.right == Leaf{} ?
+			Unit{} :
+			pq.left.x <= pq.right.x ?
+				// case true
+				let _ := pq.left.DeleteMinCorrect() in
+				let _ := asserting(pq.left.DeleteMin().Valid()) in
+				asserting(pqPrime.Valid()) :
+				// case false
+				let newX := pq.right.x in
+				let newLeft := pq.right.ReplaceRoot(pq.left.x) in
+				let newRight := pq.left.DeleteMin() in
+				let _ := pq.left.DeleteMinCorrect() in
+				let _ := asserting(pq.left.DeleteMin().Valid()) in
+				let _ := pq.right.ReplaceRootCorrect(pq.left.x) in
+				let _ := asserting(pqPrime.Valid()) in
+				let _ := asserting(pqPrime.Elements() == mset[int]{newX} union newLeft.Elements() union newRight.Elements()) in
+				let _ := asserting(pqPrime.Elements() union mset[int]{pq.x} == mset[int]{newX} union newLeft.Elements() union newRight.Elements() union mset[int]{pq.x}) in
+				asserting(pqPrime.Elements() union mset[int]{pq.x} == pq.right.Elements() union mset[int]{pq.left.x} union newRight.Elements() union mset[int]{pq.x})
+}
+
+/** Section 10.2.5. **/
+
+ghost
+requires !pq.IsEmpty()
+decreases len(pq)
+pure func (pq PQueue) ReplaceRoot(y int) PQueue {
+	return pq.left == Leaf{} ||
+		(y <= pq.left.x && (pq.right == Leaf{} || y <= pq.right.x)) ?
+			Node{y, pq.left, pq.right} :
+			(pq.right == Leaf{} ?
+				Node{pq.left.x, Node{y, Leaf{}, Leaf{}}, Leaf{}} :
+				(pq.left.x < pq.right.x ?
+					Node{pq.left.x, pq.left.ReplaceRoot(y), pq.right} :
+					Node{pq.right.x, pq.left, pq.right.ReplaceRoot(y)}))
+}
+
+ghost
+requires pq.Valid() && !pq.IsEmpty()
+ensures let pqPrime := pq.ReplaceRoot(y) in
+	pqPrime.Valid() &&
+	pq.Elements() union mset[int]{y} == pqPrime.Elements() union mset[int]{pq.x} &&
+	len(pqPrime.Elements()) == len(pq.Elements())
+decreases len(pq)
+pure func (pq PQueue) ReplaceRootCorrect(y int) Unit {
+	return let pqPrime := pq.ReplaceRoot(y) in
+		pq.left == Leaf{} || (y <= pq.left.x && (pq.right == Leaf{} || y <= pq.right.x)) ?
+			Unit{} :
+			pq.right == Leaf{} ?
+				// case true
+				let newLeft := PQueue(Node{y, Leaf{}, Leaf{}}) in
+				let newRight := PQueue(Leaf{}) in
+				let _ := asserting(pqPrime == Node{pq.left.x, newLeft, newRight}) in
+				let _ := asserting(pqPrime.Elements() == mset[int]{pq.left.x} union newLeft.Elements() union newRight.Elements()) in
+				let _ := asserting(newLeft.Elements() == mset[int]{y}) in
+				let _ := asserting(newRight.Elements() == mset[int]{}) in
+				let _ := asserting(pqPrime.Elements() == mset[int]{pq.left.x, y}) in
+				let _ := asserting(pq.Elements() == mset[int]{pq.x} union pq.left.Elements() union pq.right.Elements()) in
+				let _ := asserting(pq.right.Elements() == mset[int]{}) in
+				let _ := asserting(len(pq.right.Elements()) + 1 == len(pq.left.Elements())) in
+				let _ := asserting(len(pq.right.Elements()) == 0) in
+				let _ := asserting(len(pq.left.Elements()) == 1) in
+				let _ := asserting(len(pq.left.Elements()) == 1 + len(pq.left.left.Elements()) + len(pq.left.right.Elements())) in
+				let _ := asserting(pq.left.left.IsEmpty() && pq.left.right.IsEmpty()) in
+				let _ := asserting(newLeft.IsBalanced() && newRight.IsBalanced()) in
+				let _ := asserting(len(newLeft.Elements()) == 1 + len(newRight.Elements())) in
+				let _ := asserting(pqPrime.IsBalanced()) in
+				let _ := asserting(newLeft.IsBinaryHeap() && newRight.IsBinaryHeap()) in
+				asserting(pqPrime.IsBinaryHeap()):
+				// case false
+				pq.left.x < pq.right.x ?
+					// case true
+					let newX := pq.left.x in
+					let newLeft := pq.left.ReplaceRoot(y) in
+					let newRight := pq.right in
+					let _ := asserting(pq.IsBalanced()) in
+					let _ := asserting(len(pq.right.Elements()) + 1 == len(pq.left.Elements()) || len(pq.right.Elements()) == len(pq.left.Elements())) in
+					let _ := pq.left.ReplaceRootCorrect(y) in
+					let _ := asserting(len(pq.right.Elements()) + 1 == len(newLeft.Elements()) || len(pq.right.Elements()) == len(newLeft.Elements())) in
+					let _ := asserting(newLeft.Valid()) in
+					let _ := asserting(newLeft.IsBalanced()) in
+					let _ := asserting(pqPrime.IsBalanced()) in
+					let _ := asserting(pqPrime.IsBinaryHeap()) in
+					let _ := asserting(pq.left.Elements() union mset[int]{y} == newLeft.Elements() union mset[int]{pq.left.x}) in
+					let _ := asserting(pq.Elements() == mset[int]{pq.x} union pq.left.Elements() union pq.right.Elements()) in
+					let _ := asserting(pqPrime.Elements() == (mset[int]{pq.left.x} union pqPrime.left.Elements()) union pqPrime.right.Elements()) in
+					asserting(pqPrime.Elements() == (pq.left.Elements() union mset[int]{y}) union pqPrime.right.Elements()):
+					// case false
+					let newX := pq.right.x in
+					let newLeft := pq.left in
+					let newRight := pq.right.ReplaceRoot(y) in
+					let _ := asserting(pq.IsBalanced()) in
+					let _ := asserting(len(pq.right.Elements()) + 1 == len(pq.left.Elements()) || len(pq.right.Elements()) == len(pq.left.Elements())) in
+					let _ := pq.right.ReplaceRootCorrect(y) in
+					let _ := asserting(len(newRight.Elements()) + 1 == len(newLeft.Elements()) || len(newRight.Elements()) == len(newLeft.Elements())) in
+					let _ := asserting(newRight.Valid()) in
+					let _ := asserting(newRight.IsBalanced()) in
+					let _ := asserting(pqPrime.IsBalanced()) in
+					let _ := asserting(pqPrime.IsBinaryHeap()) in
+					let _ := asserting(pq.right.Elements() union mset[int]{y} == newRight.Elements() union mset[int]{pq.right.x}) in //
+					let _ := asserting(pq.Elements() == mset[int]{pq.x} union pq.left.Elements() union pq.right.Elements()) in
+					let _ := asserting(pqPrime.Elements() == (mset[int]{pq.right.x} union pqPrime.right.Elements()) union pqPrime.left.Elements()) in
+					asserting(pqPrime.Elements() == (pq.right.Elements() union mset[int]{y}) union pqPrime.left.Elements())
+}

@@ -1,0 +1,20 @@
+package chapter10
+
+// Exercise 10.2.
+
+ghost
+requires pq.IsBinaryHeap() && y in pq.Elements()
+ensures pq.x <= y
+decreases len(pq)
+pure func (pq PQueue) BinaryHeapStoresMinimum(y int) Unit {
+	return match pq {
+		case Leaf{}:
+			Unit{}
+		case Node{?x, ?l, ?r}:
+			let _ := asserting(pq.Elements() == mset[int]{x} union l.Elements() union r.Elements()) in
+			let minL := l == Leaf{} ? x : l.x in
+			let minR := r == Leaf{} ? x : r.x in
+			let _ := (y in l.Elements()) ? l.BinaryHeapStoresMinimum(y) : Unit{} in
+			(y in r.Elements()) ? r.BinaryHeapStoresMinimum(y) : Unit{}
+	}
+}

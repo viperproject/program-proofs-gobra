@@ -1,0 +1,18 @@
+package chapter10
+
+// Exercise 10.4.
+
+ghost
+requires !pq.IsEmpty()
+ensures pq.IsBalanced() ==> (pq.left == Leaf{} ==> pq.right == Leaf{})
+decreases
+pure func (pq PQueue) BraunTreeImplication() Unit {
+	return let L := len(pq.left.Elements()) in
+		let R := len(pq.right.Elements()) in
+		pq.IsBalanced() ?
+			// case true
+			let _ := asserting(pq.IsBalanced()) in
+			asserting(L == R || L == R + 1) :
+			// case false
+			Unit{}
+}
