@@ -1,0 +1,58 @@
+package chapter10
+
+/** Section 10.3.2. **/
+
+ghost
+decreases
+pure func (pq PQueue) ValidIntrinsic() bool {
+	return pq.Valid()
+}
+
+ghost
+decreases
+pure func (pq PQueue) ElementsIntrinsic() mset[int] {
+	return pq.Elements()
+}
+
+ghost
+decreases
+pure func IsMinIntrinsic(m int, s mset[int]) bool {
+	return IsMin(m, s)
+}
+
+ghost
+ensures res.ValidIntrinsic()
+ensures res.ElementsIntrinsic() == mset[int]{}
+decreases
+pure func EmptyIntrinsic() (res PQueue) {
+	return let _ := EmptyCorrect() in Empty()
+}
+
+ghost
+requires pq.ValidIntrinsic()
+ensures res == (pq.ElementsIntrinsic() == mset[int]{})
+decreases
+pure func (pq PQueue) IsEmptyIntrinsic() (res bool) {
+	return let _ := pq.IsEmptyCorrect() in pq.IsEmpty()
+}
+
+ghost
+requires pq.ValidIntrinsic()
+ensures res.ValidIntrinsic()
+ensures res.ElementsIntrinsic() == mset[int]{y} union pq.ElementsIntrinsic()
+decreases
+pure func (pq PQueue) InsertIntrinsic(y int) (res PQueue) {
+	return let _ := pq.InsertCorrect(y) in pq.Insert(y)
+}
+
+ghost
+requires pq.ValidIntrinsic() && !pq.IsEmptyIntrinsic()
+ensures let y := res.left in
+	let pqPrime := res.right in
+	pqPrime.Valid() &&
+	IsMinIntrinsic(y, pq.ElementsIntrinsic()) &&
+	pqPrime.ElementsIntrinsic() union mset[int]{y} == pq.ElementsIntrinsic()
+decreases
+pure func (pq PQueue) RemoveMinIntrinsic() (res PairOfIntPQueue) {
+	return let _ := pq.RemoveMinCorrect() in pq.RemoveMin()
+}

@@ -1,0 +1,28 @@
+package chapter10
+
+// Exercise 10.0.
+
+ghost
+decreases
+func Test(x, y int) {
+	pq0 := Empty()
+	pq1 := pq0.Insert(x)
+	pq2 := pq1.Insert(y)
+	EmptyCorrect()
+	pq0.InsertCorrect(x)
+	pq1.InsertCorrect(y)
+	pq2.IsEmptyCorrect()
+	assert !pq2.IsEmpty()
+
+	pair1 := pq2.RemoveMin()
+	o1 := pair1.left
+	pq3 := pair1.right
+	pq2.RemoveMinCorrect()
+	pq3.IsEmptyCorrect()
+
+	pair2 := pq3.RemoveMin()
+	o2 := pair2.left
+	pq4 := pair2.right
+	pq3.RemoveMinCorrect()
+	assert o1 <= o2
+}
