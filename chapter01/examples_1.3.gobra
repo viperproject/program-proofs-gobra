@@ -1,4 +1,4 @@
-package chapter1
+package chapter01
 
 func Triple_v4(x int) (r int) {
 	if x == 0 {

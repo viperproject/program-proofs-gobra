@@ -1,4 +1,4 @@
-package chapter8
+package chapter08
 
 /*
  * In Go, one can import packages to access the definitions of those packages.

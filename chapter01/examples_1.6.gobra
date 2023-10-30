@@ -1,4 +1,4 @@
-package chapter1
+package chapter01
 
 ensures r == 3 * x
 func Triple(x int) (r int) {

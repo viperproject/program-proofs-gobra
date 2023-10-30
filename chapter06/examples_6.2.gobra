@@ -1,4 +1,4 @@
-package chapter6
+package chapter06
 
 ghost
 ensures res.Length() == xs.Length() + ys.Length()

@@ -1,4 +1,4 @@
-package chapter1
+package chapter01
 
 // Dafny functions must be pure, and have no side-effects. Essentially,
 // they are mathematical functions. Because of this, they can be used in

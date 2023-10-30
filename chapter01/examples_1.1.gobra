@@ -1,4 +1,4 @@
-package chapter1
+package chapter01
 
 func Truple_v2(x int) (r int) {
 	y := 2 * x

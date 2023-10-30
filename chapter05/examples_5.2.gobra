@@ -1,4 +1,4 @@
-package chapter5
+package chapter05
 
 // Gobra does not try to prove lemmas by induction automatically.
 // As such, all proofs need to be written down explicitly.

@@ -1,4 +1,4 @@
-package chapter6
+package chapter06
 
 // Exercise 6.2.: The implementation of the lemma "SnocAppend" can be found in examples_6.6.gobra.
 

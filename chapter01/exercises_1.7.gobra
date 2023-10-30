@@ -1,4 +1,4 @@
-package chapter1
+package chapter01
 
 // Exercise 1.11.
 pure func F() int {

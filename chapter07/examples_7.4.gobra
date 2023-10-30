@@ -1,4 +1,4 @@
-package chapter7
+package chapter07
 
 /*
  * As said earlier, pure functions in Gobra currently have severe syntactical constraints.

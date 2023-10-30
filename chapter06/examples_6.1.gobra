@@ -1,4 +1,4 @@
-package chapter6
+package chapter06
 
 /*
  * Often, we use the method notation from Go, where we put a parameter before the name of the method

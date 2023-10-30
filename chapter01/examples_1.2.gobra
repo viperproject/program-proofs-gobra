@@ -1,4 +1,4 @@
-package chapter1
+package chapter01
 
 // By default, Gobra only reports the first error it finds. As such,
 // uncommenting all three assertions below will cause Gobra to report

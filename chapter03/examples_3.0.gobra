@@ -1,4 +1,4 @@
-package chapter3
+package chapter03
 
 // All examples above are successfully verified by Gobra, even though
 // accepting them can lead to mathematical inconsistencies, as shown

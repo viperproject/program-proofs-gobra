@@ -1,4 +1,4 @@
-package chapter6
+package chapter06
 
 
 // Exercise 6.15.: The implementation of the lemma "AtFind" can be found in examples_6.5.gobra.

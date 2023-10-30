@@ -1,4 +1,4 @@
-package chapter3
+package chapter03
 
 // 3.3.0. Remaining school work
 requires 0 <= c

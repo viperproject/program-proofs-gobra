@@ -1,4 +1,4 @@
-package chapter4
+package chapter04
 
 // Gobra does not support generics at the moment. In all examples, we will monomorphise
 // generic definitions, i.e., we will instantiate the generic types with a concrete type

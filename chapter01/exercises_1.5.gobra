@@ -1,4 +1,4 @@
-package chapter1
+package chapter01
 
 // Exercise 1.9.
 // Gobra does not support the apostrophe ('). From now on,

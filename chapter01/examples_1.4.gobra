@@ -1,4 +1,4 @@
-package chapter1
+package chapter01
 
 func Caller_v1() {
 	t := Triple_v4(18)

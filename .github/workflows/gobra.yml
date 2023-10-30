@@ -29,7 +29,7 @@ jobs:
       - name: Verify chapter 1
         uses: viperproject/gobra-action@main
         with:
-          packages: 'chapter1'
+          packages: 'chapter01'
           timeout: 3m
           # includePaths: ${{ env.includePaths }}
           assumeInjectivityOnInhale: ${{ env.assumeInjectivityOnInhale }}
@@ -39,7 +39,7 @@ jobs:
       - name: Verify chapter 3
         uses: viperproject/gobra-action@main
         with:
-          packages: 'chapter3'
+          packages: 'chapter03'
           timeout: 3m
           assumeInjectivityOnInhale: ${{ env.assumeInjectivityOnInhale }}
           checkConsistency: ${{ env.checkConsistency }}
@@ -48,7 +48,7 @@ jobs:
       - name: Verify chapter 4
         uses: viperproject/gobra-action@main
         with:
-          packages: 'chapter4'
+          packages: 'chapter04'
           timeout: 3m
           assumeInjectivityOnInhale: ${{ env.assumeInjectivityOnInhale }}
           checkConsistency: ${{ env.checkConsistency }}
@@ -57,7 +57,7 @@ jobs:
       - name: Verify chapter 5
         uses: viperproject/gobra-action@main
         with:
-          packages: 'chapter5'
+          packages: 'chapter05'
           timeout: 3m
           # includePaths: ${{ env.includePaths }}
           assumeInjectivityOnInhale: ${{ env.assumeInjectivityOnInhale }}
@@ -67,7 +67,7 @@ jobs:
       - name: Verify chapter 6
         uses: viperproject/gobra-action@main
         with:
-          packages: 'chapter6'
+          packages: 'chapter06'
           timeout: 3m
           # includePaths: ${{ env.includePaths }}
           assumeInjectivityOnInhale: ${{ env.assumeInjectivityOnInhale }}
@@ -77,7 +77,7 @@ jobs:
       - name: Verify chapter 7
         uses: viperproject/gobra-action@main
         with:
-          packages: 'chapter7'
+          packages: 'chapter07'
           timeout: 3m
           # includePaths: ${{ env.includePaths }}
           assumeInjectivityOnInhale: ${{ env.assumeInjectivityOnInhale }}
@@ -87,7 +87,7 @@ jobs:
       - name: Verify chapter 8
         uses: viperproject/gobra-action@main
         with:
-          packages: 'chapter8'
+          packages: 'chapter08'
           timeout: 3m
           # includePaths: ${{ env.includePaths }}
           assumeInjectivityOnInhale: ${{ env.assumeInjectivityOnInhale }}

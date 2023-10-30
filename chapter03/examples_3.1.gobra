@@ -1,4 +1,4 @@
-package chapter3
+package chapter03
 
 // Gobra does not currently provide a nat type for natural numbers.
 // In this example, we get around that problem with a precondition that

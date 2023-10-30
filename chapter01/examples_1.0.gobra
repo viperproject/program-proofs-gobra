@@ -1,4 +1,4 @@
-package chapter1
+package chapter01
 
 // In general, Dafny methods can be translated to functions in Go;
 // in some cases, they might be more idiomatically translated as Go methods.
