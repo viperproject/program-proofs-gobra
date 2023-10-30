@@ -1,0 +1,44 @@
+package chapter01
+
+// Dafny functions must be pure, and have no side-effects. Essentially,
+// they are mathematical functions. Because of this, they can be used in
+// method contracts. Dafny functions can be translated to Gobra as pure
+// functions, which have the same properties in Gobra.
+pure
+func Average_v1(a, b int) int {
+	return (a + b) / 2
+}
+
+// Like Dafny functions, Gobra's pure functions can be used in method
+// contracts.
+ensures Average_v1(r, 3 * x) == 3 * x
+func Truple_v7(x int) (r int) {
+	r = 3 * x
+	return r
+}
+
+pure
+requires 0 <= a && 0 <= b
+func Average_v2(a, b int) int {
+	return (a + b) / 2
+}
+
+ensures r == 3 * x
+func Triple_v8(x int) (r int) {
+	if 0 <= x {
+		r = Average_v2(2 * x, 4 * x)
+	} else {
+		r = -Average_v2(-2 * x, -4 * x)
+	}
+}
+
+// Dafny's predicates correspond to pure functions in Gobra which
+// have 'bool' as their return type. As such, IsEven is implemented as:
+pure
+func IsEven(x int) bool {
+	return x % 2 == 0
+}
+
+// Note that Gobra has a keyword 'pred' to define predicates. However,
+// predicates in Gobra have a very different meaning than those in Dafny,
+// as will be explained later.

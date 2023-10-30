@@ -1,0 +1,101 @@
+package chapter07
+
+/*
+ * As said earlier, pure functions in Gobra currently have severe syntactical constraints.
+ * In particular, Gobra currently does not support returning multiple values from a pure function.
+ * To work around this, a common approach is to return a struct that contains multiple fields.
+ * In this example, we use a 'PairOfUnary' as the return type of 'DivMod'.
+ */
+type PairOfUnary struct {
+	a, b Unary
+}
+
+/*
+ * Uncommenting the following will show a termination error.
+ */
+
+/*
+ghost
+requires y != Zero{}
+decreases x.UnaryToNat()
+pure func (x Unary) DivMod_v1(y Unary) (res PairOfUnary) {
+	return (x.Less(y) ?
+		PairOfUnary{Zero{}, x} :
+		PairOfUnary{Suc{x.Sub(y).DivMod_v1(y).a}, x.Sub(y).DivMod_v1(y).b})
+}
+*/
+
+/** Section 7.4.0 **/
+ghost
+requires y != Zero{}
+decreases x.UnaryToNat()
+pure func (x Unary) DivMod_v2(y Unary) (res PairOfUnary) {
+	return (x.Less(y) ?
+		PairOfUnary{Zero{}, x} :
+		let _ := x.SubCorrect(y) in
+		PairOfUnary{Suc{x.Sub(y).DivMod_v2(y).a}, x.Sub(y).DivMod_v2(y).b})
+}
+
+/** Section 7.4.1 **/
+
+ghost
+requires !x.Less(y) && y != Zero{}
+ensures len(x.Sub(y)) < len(x) // Notice the use of 'len' here.
+decreases len(y)
+pure func SubStructurallySmaller(x, y Unary) Unit {
+	return x == Suc{Zero{}} || y == Suc{Zero{}} ?
+		// true branch
+		let _ := asserting(x.Sub(y) == x.pre.Sub(y.pre)) in
+		let _ := asserting(x.Sub(y) == x.pre) in
+		asserting(len(x.Sub(y)) < len(x)) :
+		// false branch
+		SubStructurallySmaller(x.pre, y.pre)
+}
+
+ghost
+requires y != Zero{}
+decreases len(x)
+pure func (x Unary) DivMod_v3(y Unary) (res PairOfUnary) {
+	/*
+	 * Pure functions in Gobra are restricted to having the form 'return exp', where 'exp' is a single
+	 * expression. This is different from Dafny, where we can have multiple function calls in sequence.
+	 * To achieve the same result in Gobra, we can use the let binding: 'let x := e in s'.
+	 *
+	 * In fact, Dafny's sequential composition operator 'e1; e2', which makes multiple function calls possible,
+	 * is merely syntax sugar for 'let _ = e1 in e2'. The wildcard '_' stands for an identifier
+	 * we do not care about. Gobra has support for let expressions, but it does not support the operator ';' like Dafny.
+	 */
+	return (x.Less(y) ?
+		PairOfUnary{Zero{}, x} :
+		// introducing the call to the lemma here allows us to prove termination.
+		let _ := SubStructurallySmaller(x, y) in
+		let _ := asserting(len(x.Sub(y)) <= len(x)) in
+		PairOfUnary{Suc{x.Sub(y).DivMod_v3(y).a}, x.Sub(y).DivMod_v3(y).b})
+}
+
+/** Section 7.4.3 **/
+
+ghost
+requires y != Zero{}
+ensures x.DivMod_v2(y).a.Mul(y).Add(x.DivMod_v2(y).b) == x && x.DivMod_v2(y).b.Less(y)
+decreases len(x)
+func (x Unary) DivModCorrect(y Unary) {
+	m := x.DivMod_v2(y).b
+	if x.Less(y) {
+		x.AddZero()
+	} else {
+		dPrime := x.Sub(y).DivMod_v2(y).a
+		mPrime := x.Sub(y).DivMod_v2(y).b
+		SubStructurallySmaller(x, y)
+		x.Sub(y).DivModCorrect(y)
+		x.AddSub(y)
+		AddCommAssoc(dPrime.Mul(y), m, y)
+	}
+}
+
+ghost
+requires b
+decreases
+pure func asserting(b bool) Unit {
+	return Unit{}
+}

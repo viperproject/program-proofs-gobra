@@ -1,0 +1,30 @@
+package chapter08
+
+// ##(-I ../)
+
+import ch6 "chapter06"
+
+/** Exercise 8.1. **/
+
+ghost
+ensures Project(xs, p) == Project(ys, p) ==> Count(xs, p) == Count(ys, p)
+decreases len(xs) + len(ys)
+func ProjectSame(xs ch6.List, ys ch6.List, p int) {
+	match xs {
+		case ch6.Nil{}:
+			match ys {
+				case ch6.Nil{}:
+				case ch6.Cons{_, ?ytail}:
+					ProjectSame(xs, ytail, p)
+			}
+		case ch6.Cons{_, ?xtail}:
+			match ys {
+				case ch6.Nil{}:
+					ProjectSame(xtail, ys, p)
+				case ch6.Cons{?y, ?ytail}:
+					ProjectSame(xtail, ytail, p)
+					ProjectSame(xs, ytail, p)
+					ProjectSame(xtail, ys, p)
+			}
+	}
+}

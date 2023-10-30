@@ -1,0 +1,70 @@
+package chapter06
+
+/*
+ * Often, we use the method notation from Go, where we put a parameter before the name of the method
+ * in the declaration. This allows us to use the "dot" notation typically seen
+ * in Object-Oriented Programming, e.g., it allows us to call the Length method defined below
+ * as x.Length() instead of Length(x), where x is a variable of type List. Notice that there is no rule
+ * here; implement it as you choose!
+ *
+ * For the remainder of the examples, we will implement Dafny's functions as ghost pure functions
+ * in Gobra. Ideally, Dafny's functions would be translated to pure non-ghost functions in Gobra.
+ * However, due to the usage of ADTs, which are only supported by Gobra (and not by Go), all fuctions
+ * and methods that manipulate ADT instances must be ghost.
+ */
+
+ghost
+ensures l >= 0
+decreases len(xs)
+pure func (xs List) Length() (l int) {
+	return match xs {
+		case Nil{}:
+			0
+		case Cons{_, ?tail}:
+			1 + tail.Length()
+	}
+}
+
+ghost
+decreases len(xs)
+pure func (xs List) Snoc(y int) List {
+	return match xs {
+		case Nil{}:
+		   Cons{y, Nil{}}
+		case Cons{?head, ?tail}:
+			Cons{head, tail.Snoc(y)}
+	}
+}
+
+/*
+ * Lemmas in Dafny are translated to ghost functions in Gobra. In Gobra, we can distinguish between pure
+ * and non-pure lemmas. Whenever possible, lemmas should be defined as pure ghost functions since this
+ * allows them to be called by other pure functions.
+ * Non-pure lemmas are often useful in order to manipulate the knowledge about the resources held
+ * by the program. They will be exemplified in chapter 14.
+ */
+ghost
+ensures   xs.Snoc(x).Length() == xs.Length() + 1
+decreases len(xs)
+/*
+ * In Gobra, pure functions must currently have an explicit return type,
+ * although this is likely to change in the future. For now, we introduce
+ * the Unit type to satisfy this restriction.
+ */
+pure func (xs List) LengthSnoc(x int) Unit {
+	/*
+	 * Unlike Dafny, Gobra does not perform automatic induction. Therefore, we need to provide the
+	 * full proof. This example solves the exercise 6.1.
+	 */
+	return match xs {
+		case Nil{}:
+			Unit{} /* Bogus return value */
+		case Cons{_, ?tail}:
+			/*
+			 * Here, we have a recursive call to LengthSnoc in order to apply the Induction Hypothesis.
+			 */
+			tail.LengthSnoc(x)
+	}
+}
+
+type Unit struct{}

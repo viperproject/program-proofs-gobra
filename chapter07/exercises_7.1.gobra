@@ -1,0 +1,90 @@
+package chapter07
+
+// Exercise 7.1.
+
+ghost
+decreases len(y)
+pure func (x Unary) LessPrime(y Unary) bool {
+	return match y {
+		case Zero{}:
+			false
+		case Suc{?pre}:
+			x.isSuc ==> x.pre.Less(pre)
+	}
+}
+
+ghost
+ensures x.Less(y) == x.LessPrime(y)
+decreases len(x)
+pure func (x Unary) LessEqualsLessPrime(y Unary) Unit {
+	// Gobra is able to prove this theorem without any additional proof annotation
+	return Unit{}
+}
+
+// Exercise 7.2.
+
+ghost
+decreases len(y)
+pure func (x Unary) Less2(y Unary) bool {
+	return y != Zero{} && (x == Zero{} || x.pre.Less(y.pre))
+}
+
+// Exercise 7.3.
+
+ghost
+ensures (x.Less(y) && x != y && !y.Less(x)) ||
+		(y.Less(x) && x != y && !x.Less(y)) ||
+		(x == y && !x.Less(y) && !y.Less(x))
+decreases len(x)
+pure func (x Unary) LessTrichotomous(y Unary) Unit {
+	return match y {
+		case Zero{}:
+			Unit{}
+		case Suc{?preY}:
+			match x {
+				case Zero{}:
+					Unit{}
+				case Suc{?preX}:
+					preX.LessTrichotomous(preY)
+			}
+	}
+}
+
+// Exercise 7.4.
+
+ghost
+decreases len(x)
+pure func (x Unary) Below(y Unary) bool {
+	return x.Less(y) || x == y
+}
+
+ghost
+ensures x.Below(y) && y.Below(z) ==> x.Below(z)
+decreases len(x)
+func BelowTransitive(x Unary, y Unary, z Unary) {
+	if x.Below(y) && y.Below(z) {
+		if x != Zero{} {
+			BelowTransitive(x.pre, y.pre, z.pre)
+		}
+	}
+}
+
+ghost
+ensures x.Below(y) && y.Below(x) ==> x == y
+decreases len(x)
+func BelowAntisymmetric(x Unary, y Unary) {
+	if x.Below(y) && y.Below(x) {
+		if x.isSuc && y.isSuc {
+			BelowAntisymmetric(x.pre, y.pre)
+		}
+	}
+}
+
+ghost
+ensures x.Below(y) || y.Below(x)
+decreases len(x)
+func BelowTotal(x Unary, y Unary) {
+	if x.isSuc && y.isSuc {
+		BelowTotal(x.pre, y.pre)
+	}
+}

@@ -1,0 +1,70 @@
+package chapter05
+
+type Color adt {
+	Blue{}
+	Yellow{}
+	Green{}
+	Red{}
+}
+
+type Tree adt {
+	TLeaf{
+		data Color
+	}
+
+	TNode{
+		left  Tree
+		right Tree
+	}
+}
+
+ghost
+decreases len(t)
+pure func (t Tree) Mirror() Tree {
+	return match t {
+		case TNode{?l, ?r}: TNode{r.Mirror(), l.Mirror()}
+		case TLeaf{?l}: TLeaf{l}
+	}
+}
+
+// Notice that the proof presented here is not in calculational style; thus, this example
+// also solves exercise 5.10.
+ghost
+ensures   t.Mirror().Mirror() == t
+decreases len(t)
+func MirrorMirror(t Tree) {
+	match t {
+		case TLeaf{?l}:
+
+		case TNode{?l, ?r}:
+			var n Tree = TNode{l, r}
+			assert n.Mirror().Mirror() == Tree(TNode{r.Mirror(), l.Mirror()}).Mirror()
+			MirrorMirror(l)
+			assert l.Mirror().Mirror() == l
+			MirrorMirror(r)
+			assert r.Mirror().Mirror() == r
+			assert Tree(TNode{r.Mirror(), l.Mirror()}).Mirror() == Tree(TNode{l.Mirror().Mirror(), r.Mirror().Mirror()})
+	}
+}
+
+ghost
+ensures   0 <= r
+decreases len(t)
+pure func (t Tree) Size() (r int) {
+	return match t {
+		case TLeaf{_}: 1
+		case TNode{?l, ?r}: l.Size() + r.Size()
+	}
+}
+
+ghost
+ensures   t.Mirror().Size() == t.Size()
+decreases len(t)
+func MirrorSize(t Tree) {
+	match t {
+		case TLeaf{_}:
+		case TNode{?l, ?r}:
+			MirrorSize(l)
+			MirrorSize(r)
+	}
+}

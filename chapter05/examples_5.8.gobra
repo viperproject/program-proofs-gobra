@@ -1,0 +1,213 @@
+package chapter05
+
+type Op adt {
+	Add{}
+	Mul{}
+}
+
+type Expr adt {
+	Const{
+		num int
+	}
+
+	Var{
+		name string
+	}
+
+	ENode{
+		op Op
+		args List
+	}
+}
+
+type List adt {
+	Nil{}
+
+	Cons{
+		head Expr
+		tail List
+	}
+}
+
+ghost
+decreases len(e)
+pure func Substitute(e Expr, n string, c int) Expr {
+	return match e {
+		case Const{_}:
+			e
+		case Var{?s}:
+			s == n ? Const{c} : e
+		case ENode{?op, ?args}:
+			ENode{op, SubstituteList(args, n, c)}
+	}
+}
+
+ghost
+decreases len(es)
+pure func SubstituteList(es List, n string, c int) List {
+	return match es {
+		case Nil{}:
+			Nil{}
+		case Cons{?e, ?tail}:
+			Cons{Substitute(e, n, c), SubstituteList(tail, n, c)}
+	}
+}
+
+ghost
+decreases len(e)
+pure func Eval(e Expr, env dict[string]int) (r int) {
+	return match e {
+		case Const{?c}:
+			c
+		case Var{?s}:
+			s in domain(env) ? env[s] : 0
+		case ENode{?op, ?args}:
+			EvalList(args, op, env)
+	}
+}
+
+ghost
+decreases len(args)
+pure func EvalList(args List, op Op, env dict[string]int) int {
+	return match args {
+		case Nil{}:
+			match op {
+				case Add{}: 0
+				case Mul{}: 1
+			}
+		case Cons{?e, ?tail}:
+			let v0 := Eval(e, env) in
+			let v1 := EvalList(tail, op, env) in
+			match op {
+				case Add{}: v0 + v1
+				case Mul{}: v0 * v1
+			}
+	}
+}
+
+ghost
+ensures   Eval(Substitute(e, n, c), env) == Eval(e, env[n = c])
+decreases len(e)
+func EvalSubstitute(e Expr, n string, c int, env dict[string]int) {
+	match e {
+		case Const{_}:
+		case Var{_}:
+		case ENode{?op, ?args}:
+			EvalSubstituteList(args, op, n, c, env)
+	}
+}
+
+ghost
+ensures   EvalList(SubstituteList(args, n, c), op, env) == EvalList(args, op, env[n = c])
+decreases len(args)
+func EvalSubstituteList(args List, op Op, n string, c int, env dict[string]int) {
+	match args {
+		case Nil{}:
+		case Cons{?e, ?tail}:
+			EvalSubstitute(e, n, c, env)
+			EvalSubstituteList(tail, op, n, c, env)
+	}
+}
+
+ghost
+ensures 0 <= r
+decreases
+pure func Unit(op Op) (r int) {
+	return match op {
+		case Add{}: 0
+		case Mul{}: 1
+	}
+}
+
+ghost
+decreases len(e)
+pure func (e Expr) Optimize() Expr {
+	return e.isENode ?
+		(let args := OptimizeAndFilter(e.args, Unit(e.op)) in
+		Shorten(e.op, args)) :
+		e
+}
+
+ghost
+decreases len(args)
+pure func Shorten(op Op, args List) Expr {
+	return match args {
+		case Nil{}: Const{Unit(op)}
+		case Cons{?e, Nil{}}: e
+		case _: ENode{op, args}
+	}
+}
+
+ghost
+decreases len(es)
+pure func OptimizeAndFilter(es List, unit int) List {
+	return match es {
+		case Nil{}: Nil{}
+		case Cons{?e, ?tail}:
+			let ePrime := e.Optimize() in
+			let tailPrime := OptimizeAndFilter(tail, unit) in
+			ePrime == Const{unit} ?  tailPrime : Cons{ePrime, tailPrime}
+	}
+}
+
+ghost
+ensures   Eval(e.Optimize(), env) == Eval(e, env)
+decreases len(e)
+func OptimizeCorrect(e Expr, env dict[string]int) {
+	if e.isENode {
+		args := OptimizeAndFilter(e.args, Unit(e.op));
+		assert Eval(e.Optimize(), env) == Eval(Shorten(e.op, args), env)
+		ShortenCorrect(e.op, args, env)
+		assert Eval(Shorten(e.op, args), env) == Eval(ENode{e.op, args}, env)
+		OptimizeAndFilterCorrect(e.args, e.op, env)
+		assert Eval(ENode{e.op, args}, env) == Eval(ENode{e.op, e.args}, env)
+	}
+}
+
+ghost
+ensures   Eval(Shorten(op, args), env) == Eval(ENode{op, args}, env)
+decreases len(args)
+func ShortenCorrect(op Op, args List, env dict[string]int) {
+	if args.isNil {
+		if op.isAdd {
+			assert Eval(Shorten(op, args), env) == Eval(Const{0}, env)
+			assert Eval(ENode{Add{}, args}, env) == EvalList(args, op, env)
+			assert EvalList(args, op, env) == Unit(Add{})
+			assert Eval(Const{0}, env) == Eval(ENode{Add{}, args}, env)
+		} else {
+			assert Eval(Shorten(op, args), env) == Eval(Const{1}, env)
+			assert Eval(ENode{Mul{}, args}, env) == EvalList(args, op, env)
+			assert EvalList(args, op, env) == Unit(Mul{})
+			assert Eval(Const{1}, env) == Eval(ENode{Mul{}, args}, env)
+		}
+	} else {
+		if args.tail.isNil {
+			assert Eval(ENode{op, args}, env) == EvalList(args, op, env)
+			v0 := Eval(args.head, env)
+			v1 := EvalList(args.tail, op, env)
+			if op.isAdd {
+				assert v1 == 0
+				assert Eval(ENode{op, args}, env) == v0 + v1
+			} else {
+				assert v1 == 1
+				assert Eval(ENode{op, args}, env) == v0 * v1
+			}
+		} else {
+			assert Shorten(op, args) == ENode{op, args}
+		}
+	}
+}
+
+ghost
+ensures   Eval(ENode{op, OptimizeAndFilter(args, Unit(op))}, env) == Eval(ENode{op, args}, env)
+decreases len(args)
+func OptimizeAndFilterCorrect(args List, op Op, env dict[string]int) {
+	if args.isCons {
+		h, t := args.head, args.tail
+		OptimizeCorrect(h, env)
+		assert Eval(h, env) == Eval(h.Optimize(), env)
+		OptimizeAndFilterCorrect(t, op, env)
+		assert EvalList(OptimizeAndFilter(args, Unit(op)), op, env) ==
+			EvalList(args, op, env)
+	}
+}

@@ -1,0 +1,98 @@
+package chapter08
+
+// ##(-I ../)
+
+import ch6 "chapter06"
+
+/*
+ * To simplify, all lemmas in this chapter are implemented as non-pure functions,
+ * unless they need to be called from pure functions.
+ */
+
+ghost
+decreases len(xs)
+pure func InsertionSort(xs ch6.List) ch6.List {
+	return match xs {
+		case ch6.Nil{}:
+			ch6.Nil{}
+		case ch6.Cons{?head, ?tail}:
+			Insert(head, InsertionSort(tail))
+	}
+}
+
+ghost
+decreases len(xs)
+pure func Insert(y int, xs ch6.List) ch6.List {
+	return match xs {
+		case ch6.Nil{}:
+			ch6.Cons{y, ch6.Nil{}}
+		case ch6.Cons{?head, ?tail}:
+			y < head ? ch6.Cons{y, xs} : ch6.Cons{head, Insert(y, tail)}
+	}
+}
+
+ghost
+ensures Ordered(InsertionSort(xs))
+decreases len(xs)
+func InsertionSortOrdered(xs ch6.List) {
+	match xs {
+		case ch6.Nil{}:
+		case ch6.Cons{?head, ?tail}:
+			assert Ordered(InsertionSort(xs)) == Ordered(Insert(head, InsertionSort(tail)))
+			InsertionSortOrdered(tail)
+			InsertOrdered(head, InsertionSort(tail))
+	}
+}
+
+ghost
+requires Ordered(xs)
+ensures Ordered(Insert(y, xs))
+decreases len(xs)
+func InsertOrdered(y int, xs ch6.List) {
+	match xs {
+		case ch6.Nil{}:
+		case ch6.Cons{?head, ?tail}:
+			InsertOrdered(y, tail)
+	}
+}
+
+ghost
+ensures Project(xs, p) == Project(InsertionSort(xs), p)
+decreases len(xs)
+func InsertionSortSameElements(xs ch6.List, p int) {
+	match xs {
+		case ch6.Nil{}:
+		case ch6.Cons{?head, ?tail}:
+			InsertionSortSameElements(tail, p)
+			InsertSameElements(head, InsertionSort(tail), p)
+	}
+}
+
+ghost
+ensures Project(ch6.Cons{y, xs}, p) == Project(Insert(y, xs), p)
+decreases len(xs)
+func InsertSameElements(y int, xs ch6.List, p int) {
+	if y == p {
+		if xs.isCons && y >= xs.head {
+			assert y == p ==> Project(ch6.Cons{y, xs}, p) == ch6.Cons{y, Project(xs, p)}
+			InsertSameElements(y, xs.tail, p)
+		}
+	} else {
+		assert Project(ch6.Cons{y, xs}, p) == Project(xs, p)
+		InsertDiffPreservesProjection(xs, y, p)
+	}
+}
+
+ghost
+requires y != p
+ensures Project(Insert(y, xs), p) == Project(xs, p)
+decreases len(xs)
+func InsertDiffPreservesProjection(xs ch6.List, y int, p int) {
+	match xs {
+		case ch6.Nil{}:
+		case ch6.Cons{?head, ?tail}:
+			if y >= head {
+				InsertDiffPreservesProjection(tail, y, p)
+			}
+	}
+}

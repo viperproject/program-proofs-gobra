@@ -1,5 +1,0 @@
-package chapter5
-
-// Gobra does not support proofs in calculational style. As such, all calc blocks
-// shown in the examples are translated either as a sequence of assert statements,
-// or we omit them entirely if they are not necessary.

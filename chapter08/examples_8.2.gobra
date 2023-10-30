@@ -1,0 +1,194 @@
+package chapter08
+
+// ##(-I ../)
+
+import ch6 "chapter06"
+
+/** Section 8.2.0. **/
+
+ghost
+decreases len(xs)
+pure func MergeSort(xs ch6.List) ch6.List {
+	return MergeSortAux(xs, xs.Length())
+}
+
+/*
+ * The input parameter is named 'length' instead of 'len' because
+ * 'len' is a reserved keyword in Go.
+ */
+ghost
+requires length >= 0
+requires length == xs.Length()
+decreases length
+pure func MergeSortAux(xs ch6.List, length int) ch6.List {
+	return length < 2 ?
+		xs :
+		(let lr := Split(xs, length/2) in
+		let left := lr.left in
+		let right := lr.right in
+		Merge(MergeSortAux(left, length/2), MergeSortAux(right, length-length/2)))
+}
+
+/*
+ * To get around pure functions' limitations, we define the following struct
+ * to be able to return a multiple values.
+ */
+type PairOfLists struct {
+	left ch6.List
+	right ch6.List
+}
+
+ghost
+requires n >= 0
+requires n <= xs.Length()
+ensures let left := res.left in
+		let right := res.right in
+		left.Length() == n &&
+		right.Length() == xs.Length() - n &&
+		left.Append(right) == xs
+decreases n
+pure func Split(xs ch6.List, n int) (res PairOfLists) {
+	return n == 0 ?
+		PairOfLists{ch6.Nil{}, xs} :
+		(let lr := Split(xs.tail, n - 1) in
+		let l := lr.left in
+		let r := lr.right in
+		PairOfLists{ch6.Cons{xs.head, l}, r})
+}
+
+ghost
+decreases len(xs) + len(ys)
+pure func Merge(xs ch6.List, ys ch6.List) (res ch6.List) {
+	/*
+	* Gobra does not support matching multiple ADTs at once.
+	* As such, we match on xs and ys seperately.
+	*/
+	return match xs {
+		case ch6.Nil{}:
+			match ys {
+				case ch6.Nil{}:
+					ch6.Nil{}
+				case ch6.Cons{_, _}:
+					ys
+			}
+		case ch6.Cons{?x, ?xtail}:
+			match ys {
+				case ch6.Nil{}:
+					xs
+				case ch6.Cons{?y, ?ytail}:
+					x <= y ? ch6.Cons{x, Merge(xtail, ys)} : ch6.Cons{y, Merge(xs, ytail)}
+			}
+	}
+}
+
+/** Section 8.2.1. **/
+
+ghost
+ensures Ordered(MergeSort(xs))
+decreases len(xs)
+func MergeSortOrdered(xs ch6.List) {
+	MergeSortAuxOrdered(xs, xs.Length())
+}
+
+ghost
+requires length >= 0
+requires length == xs.Length()
+ensures Ordered(MergeSortAux(xs, length))
+decreases length
+func MergeSortAuxOrdered(xs ch6.List, length int) {
+	if length > 0 {
+		if length == 1 {
+			assert MergeSortAux(xs, length) == xs
+			/*
+			 * In this solution, we need to unfold once the definition of Length,
+			 * otherwise Gobra does not realize that xs.tail is Nil.
+			 */
+			assert xs.Length() == (xs.isCons ? 1 + xs.tail.Length() : 0)
+			assert xs.Length() == 1 ==> xs.isCons && xs.tail.isNil
+			assert Ordered(xs)
+		} else {
+			pair := Split(xs, length/2)
+			MergeSortAuxOrdered(pair.left, length/2)
+			MergeSortAuxOrdered(pair.right, length - length/2)
+			MergeOrdered(MergeSortAux(pair.left, length/2), MergeSortAux(pair.right, length-length/2))
+		}
+	}
+}
+
+ghost
+requires Ordered(xs) && Ordered(ys)
+ensures Ordered(Merge(xs, ys))
+decreases len(xs) + len(ys)
+func MergeOrdered(xs, ys ch6.List) {
+	match xs {
+		case ch6.Nil{}:
+		case ch6.Cons{?x, ?tail}:
+			match ys {
+				case ch6.Nil{}:
+				case ch6.Cons{_, ?ytail}:
+					if x <= ys.head {
+						MergeOrdered(tail, ys)
+					} else {
+						MergeOrdered(xs, ytail)
+					}
+			}
+	}
+}
+
+/** Section 8.2.2. **/
+
+ghost
+ensures Project(xs, p) == Project(MergeSort(xs), p)
+decreases len(xs)
+func MergeSortSameElements(xs ch6.List, p int) {
+	MergeSortAuxSameElements(xs, xs.Length(), p)
+}
+
+ghost
+requires length == xs.Length()
+requires length >= 0
+ensures Project(xs, p) == Project(MergeSortAux(xs, length), p)
+decreases length
+func MergeSortAuxSameElements(xs ch6.List, length int, p int) {
+	if 2 <= length {
+		pair := Split(xs, length/2)
+		left := pair.left
+		right := pair.right
+		MergeSortAuxOrdered(left, length/2)
+		MergeSortAuxOrdered(right, length - length/2)
+		MergeSameElements(MergeSortAux(left, length/2), MergeSortAux(right, length - length/2), p)
+		MergeSortAuxSameElements(left, length/2, p)
+		MergeSortAuxSameElements(right, length - length/2, p)
+		AppendProject(left, right, p)
+	}
+}
+
+ghost
+requires Ordered(xs) && Ordered(ys)
+ensures Project(Merge(xs, ys), p) == Project(xs, p).Append(Project(ys, p))
+decreases len(xs) + len(ys)
+func MergeSameElements(xs ch6.List, ys ch6.List, p int) {
+	match xs {
+		case ch6.Nil{}:
+		case ch6.Cons{?x, ?xtail}:
+			match ys {
+				case ch6.Nil{}:
+					MergeSameElements(xtail, ys, p)
+				case ch6.Cons{?y, ?ytail}:
+					MergeSameElements(xs, ytail, p)
+					MergeSameElements(xtail, ytail, p)
+					MergeSameElements(xtail, ys, p)
+			}
+	}
+}
+
+ghost
+ensures Project(xs,p).Append(Project(ys, p)) == Project(xs.Append(ys), p)
+decreases len(xs)
+func AppendProject(xs ch6.List, ys ch6.List, p int) {
+	match xs {
+		case ch6.Nil{}:
+		case ch6.Cons{_, ?tail}:
+			AppendProject(tail, ys, p)
+	}
+}

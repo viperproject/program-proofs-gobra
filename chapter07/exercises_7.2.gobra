@@ -1,0 +1,66 @@
+package chapter07
+
+// Exercise 7.5.: The implementations of these lemmas can be found in examples_7.2.gobra.
+
+// Exercise 7.6.
+
+ghost
+ensures x.Add(y).Add(z) == x.Add(y.Add(z))
+decreases len(y)
+func AddAssociative(x Unary, y Unary, z Unary) {
+	match y {
+		case Zero{}:
+			x.AddZero()
+			z.AddZero()
+		case Suc{?pre}:
+			x.Add(y.pre).SuccAdd(z)
+			AddAssociative(x, y.pre, z)
+			y.pre.SuccAdd(z)
+	}
+}
+
+// Exercise 7.7.
+
+ghost
+ensures x.Add(y) == y.Add(x)
+decreases len(y)
+func (x Unary) AddCommutative(y Unary) {
+	match y {
+		case Zero{}:
+			x.AddZero()
+		case Suc{?pre}:
+			x.AddCommutative(pre)
+			pre.SuccAdd(x)
+	}
+}
+
+// Exercise 7.8.
+
+ghost
+ensures x.Add(y).Add(z) == x.Add(z).Add(y)
+decreases len(z)
+func AddCommAssoc(x Unary, y Unary, z Unary) {
+	match z {
+		case Zero{}:
+
+		case Suc{?pre}:
+			AddCommAssoc(x, y, pre)
+			x.Add(pre).SuccAdd(y)
+	}
+}
+
+// Exercise 7.9.
+
+ghost
+requires !x.Less(y)
+ensures x.Sub(y).Add(y) == x
+decreases len(y)
+func (x Unary) AddSub(y Unary) {
+	match y {
+		case Zero{}:
+
+		case Suc{?pre}:
+			x.pre.AddSub(pre)
+	}
+}
+

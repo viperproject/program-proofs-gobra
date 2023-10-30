@@ -1,0 +1,4 @@
+package chapter03
+
+// Gobra never tries to infer a termination measure. If one is not provided,
+// Gobra just proves Partial Correctness.

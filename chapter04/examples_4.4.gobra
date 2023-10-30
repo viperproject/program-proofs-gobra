@@ -1,0 +1,33 @@
+package chapter04
+
+type Color adt {
+	Blue{}
+	Yellow{}
+	Green{}
+	Red{}
+}
+
+type ColoredTree adt {
+	Leaf{
+		color Color
+	}
+
+	// In Gobra, different ADTs cannot have a variant with the same name.
+	// To avoid name clashes with Tree, we renamed this variant.
+	NodeColored{
+		color1 ColoredTree
+		color2 ColoredTree
+	}
+}
+
+ghost
+decreases
+pure func (c Color) IsSwedishFlagColor() bool {
+	return c.isBlue || c.isYellow
+}
+
+ghost
+decreases
+pure func (c Color) IsLithuanianFlagColor() bool {
+	return c != Blue{}
+}

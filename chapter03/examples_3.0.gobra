@@ -1,0 +1,33 @@
+package chapter03
+
+// All examples above are successfully verified by Gobra, even though
+// accepting them can lead to mathematical inconsistencies, as shown
+// for the function 'Dubious'. This is because, by default, Gobra only
+// checks for Partial Correctness, which does not take termination into
+// account.
+ensures d == 2 * x
+func BadDouble(x int) (d int) {
+	y := BadDouble(x - 1)
+	d = y + 2
+	return d
+}
+
+ensures y == x
+func PartialId(x int) (y int) {
+	if x % 2 == 0 {
+		y = x
+	} else {
+		y = PartialId(x)
+	}
+	return y
+}
+
+ensures y % 2 == 0 && y == 10 * x - 3
+func Impossible(x int) (y int) {
+	y = Impossible(x)
+	return y
+}
+
+pure func Dubious() int {
+	return 1 + Dubious()
+}

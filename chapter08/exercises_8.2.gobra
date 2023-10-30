@@ -1,0 +1,80 @@
+package chapter08
+
+// ##(-I ../)
+
+import ch6 "chapter06"
+
+/** Exercise 8.2. **/
+
+ghost
+requires nn.Length() <= xs.Length()
+ensures let n := nn.Length() / 2 in
+	res.left.Length() == n &&
+	res.right.Length() == xs.Length() - n &&
+	res.left.Append(res.right) == xs
+decreases len(nn) + len(xs)
+pure func SplitPrime(xs ch6.List, nn ch6.List) (res PairOfLists) {
+	return match xs {
+		case ch6.Nil{}:
+			match nn {
+				case ch6.Nil{}:
+					PairOfLists{ch6.Nil{}, xs}
+				case ch6.Cons{?n, ?ntail}:
+					PairOfLists{ch6.Nil{}, nn}
+			}
+		case ch6.Cons{?x, ?xtail}:
+			match nn {
+				case ch6.Nil{}:
+					PairOfLists{ch6.Nil{}, xs}
+				case ch6.Cons{?n, ch6.Cons{?nPrime, ?ntail}}:
+					let _ := ch6.List(ch6.Cons{nPrime, ntail}).Length() + 1 == nn.Length() in
+					let _ := xtail.Length() <= ntail.Length() in
+					let pair :=  SplitPrime(xtail, ntail) in
+					PairOfLists{ch6.Cons{x, pair.left}, pair.right}
+				case ch6.Cons{?n, ch6.Nil{}}:
+					PairOfLists{ch6.Nil{}, xs}
+			}
+	}
+}
+
+/** Exercise 8.3. **/
+
+ghost
+decreases xs.Length()
+pure func MergeSortPrime(xs ch6.List) ch6.List {
+	return xs.Length() < 2 ?
+		xs :
+		(let pair := SplitPrime(xs, xs) in
+		Merge(MergeSortPrime(pair.left), MergeSortPrime(pair.right)))
+}
+
+ghost
+ensures MergeSort(xs) == MergeSortPrime(xs)
+decreases xs.Length()
+func MergeSortEqualsMergeSortPrime(xs ch6.List) {
+	match xs {
+		case ch6.Nil{}:
+		case ch6.Cons{?x, ?tail}:
+			if xs.Length() >= 2 {
+				length := xs.Length()
+				pair := Split(xs, length/2)
+				pairPrime := SplitPrime(xs, xs)
+				assert MergeSort(xs) == MergeSortAux(xs, length)
+				assert MergeSortAux(xs, xs.Length()) ==
+					Merge(MergeSortAux(pair.left, length/2), MergeSortAux(pair.right, length-length/2))
+				MergeSortEqualsMergeSortPrime(pair.left)
+				MergeSortEqualsMergeSortPrime(pair.right)
+				ch6.AppendDecomposition(pair.left, pair.right, pairPrime.left, pairPrime.right)
+			}
+	}
+}
+
+/*
+ * Exercise 8.4.: The implementation of the lemma "MergeSortAuxOrdered" can be
+ * found in file examples_8.2.gobra.
+ */
+
+/* 
+ * Exercise 8.5.: The implementation of the lemma "MergeOrdered" can be
+ * found in file examples_8.2.gobra.
+ */

@@ -1,0 +1,20 @@
+package chapter01
+
+// In general, Dafny methods can be translated to functions in Go;
+// in some cases, they might be more idiomatically translated as Go methods.
+// Notice that, even though the terminology is similar, Dafny and Go methods
+// correspond to different concepts:
+// - in Dafny, a method is a unit of code that can be compiled and
+//   executed,
+// - in Go, a method is a function 'foo' with a distinguished parameter
+//   'x', which is called with dot notation: 'x.foo(...)'
+
+// Like in Dafny, Go allows return variables to be bound to a variable.
+// In this case, it is bound to r.
+// To avoid name clashes, we attach a version number to all
+// implementations of Triple.
+func Triple_v1(x int) (r int) {
+	y := 2 * x
+	r = x + y
+	return r
+}

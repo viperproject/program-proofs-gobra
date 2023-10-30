@@ -1,0 +1,43 @@
+package chapter04
+
+// Exercise 4.1.
+ghost
+decreases len(t)
+pure func (t BYTree) ReverseColors() BYTree {
+	return match t {
+		case BlueLeaf{}:
+			YellowLeaf{}
+		case YellowLeaf{}:
+			BlueLeaf{}
+		case Node{?l, ?r}:
+			let lr := l.ReverseColors() in
+			let rr := r.ReverseColors() in
+			Node{lr, rr}
+	}
+}
+
+// Exercise 4.2.
+ghost
+func TestReverseColors() {
+	var a BYTree = Node{BlueLeaf{}, Node{BlueLeaf{}, YellowLeaf{}}}
+	var b BYTree = Node{YellowLeaf{}, Node{YellowLeaf{}, BlueLeaf{}}}
+	// Gobra requires these extra assertions, otherwise the last two assertions
+	// may not succeed.
+	assert a.right.right.ReverseColors() == b.right.right
+	assert a.left.ReverseColors() == b.left
+	assert a.right.ReverseColors() == Node{YellowLeaf{}, BlueLeaf{}}
+	assert a.right == b.right.ReverseColors()
+	assert a.ReverseColors() == b
+	assert b.ReverseColors() == a
+}
+
+// Exercise 4.3.
+ghost
+decreases len(t)
+pure func (t BYTree) Oceanize() BYTree {
+	return match t {
+		case BlueLeaf{}: BlueLeaf{}
+		case YellowLeaf{}: BlueLeaf{}
+		case Node{?l, ?r}: Node{l.Oceanize(), r.Oceanize()}
+	}
+}

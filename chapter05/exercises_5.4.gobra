@@ -1,0 +1,31 @@
+package chapter05
+
+// Exercise 5.6.
+
+// Ack function as defined in section 3.3.1, now provided
+// as a pure function.
+ghost
+requires 0 <= m
+requires 0 <= n
+ensures  0 <= r
+decreases m, n
+pure func Ack(m, n int) (r int) {
+	return m == 0 ? n + 1 : (n == 0 ? Ack(m - 1, 1) : Ack(m - 1, Ack(m, n - 1)))
+}
+
+ghost
+requires 0 <= n
+ensures  Ack(1, n) == n + 2
+decreases n
+func LemmaAckOne(n int) {
+	if n == 0 {
+		assert Ack(1, n) == Ack(0, 1)
+		assert Ack(0, 1) == 2
+	} else {
+		assert Ack(1, n) == Ack(0, Ack(1, n - 1))
+		LemmaAckOne(n - 1)
+		assert Ack(0, Ack(1, n - 1)) == Ack(0, n + 1)
+		assert Ack(0, n + 1) == n + 2
+	}
+
+}

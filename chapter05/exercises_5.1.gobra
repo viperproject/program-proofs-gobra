@@ -1,0 +1,11 @@
+package chapter05
+
+// Exercise 5.1.
+decreases
+func ExampleLemmaUse_v2(a int) {
+	b := More(a)
+	Increasing(a)
+	Increasing(b)
+	b = More(b)
+	assert 2 <= b - a // replace 'c' with 'b'
+}

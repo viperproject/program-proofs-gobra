@@ -1,0 +1,10 @@
+package chapter06
+
+
+// Exercise 6.15.: The implementation of the lemma "AtFind" can be found in examples_6.5.gobra.
+
+// Exercise 6.16.: The implementation of the lemma "BeforeFind" can be found in examples_6.5.gobra.
+
+// Exercise 6.17.: The implementation of the lemma "FindAppend" can be found in examples_6.5.gobra.
+
+// Exercise 6.18.: The implementation of the lemma "FindDrop" can be found in examples_6.5.gobra.

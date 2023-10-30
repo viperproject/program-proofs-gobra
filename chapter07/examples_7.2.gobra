@@ -1,0 +1,62 @@
+package chapter07
+
+ghost
+decreases len(y)
+pure func (x Unary) Add(y Unary) Unary {
+	return match y {
+		case Zero{}:
+			x
+		case Suc{?pre}:
+			Suc{x.Add(pre)}
+	}
+}
+
+ghost
+ensures x.Add(y).UnaryToNat() == x.UnaryToNat() + y.UnaryToNat()
+decreases len(y)
+func (x Unary) AddCorrect(y Unary) {
+	if y.isSuc {
+		x.AddCorrect(y.pre)
+	}
+}
+
+ghost
+ensures Suc{x.Add(y)} == Unary(Suc{x}).Add(y)
+decreases len(y)
+func (x Unary) SuccAdd(y Unary) {
+	match y {
+		case Zero{}:
+
+		case Suc{?pre}:
+			x.SuccAdd(y.pre)
+	}
+}
+
+ghost
+ensures Unary(Zero{}).Add(x) == x
+decreases len(x)
+func (x Unary) AddZero() {
+	if x.isSuc {
+		x.pre.AddZero()
+	}
+}
+
+ghost
+requires !x.Less(y)
+decreases len(x)
+pure func (x Unary) Sub(y Unary) (res Unary) {
+	return match y {
+		case Zero{}:
+			x
+		case Suc{?pre}:
+			x.pre.Sub(pre)
+	}
+}
+
+ghost
+requires !x.Less(y)
+ensures x.Sub(y).UnaryToNat() == x.UnaryToNat() - y.UnaryToNat()
+decreases len(x)
+pure func (x Unary) SubCorrect(y Unary) Unit {
+	return y.isSuc ? x.pre.SubCorrect(y.pre) : Unit{}
+}
