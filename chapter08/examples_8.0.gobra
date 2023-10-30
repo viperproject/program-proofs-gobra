@@ -13,7 +13,7 @@ package chapter08
 /*
  * The following allows us to access the definitions of List from chapter 6.
  */
-import ch6 "chapter6"
+import ch6 "chapter06"
 
 /** Section 8.0.0. **/
 

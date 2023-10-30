@@ -2,7 +2,7 @@ package chapter08
 
 // ##(-I ../)
 
-import ch6 "chapter6"
+import ch6 "chapter06"
 
 /** Exercise 8.1. **/
 

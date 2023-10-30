@@ -2,7 +2,7 @@ package chapter08
 
 // ##(-I ../)
 
-import ch6 "chapter6"
+import ch6 "chapter06"
 
 /*
  * To simplify, all lemmas in this chapter are implemented as non-pure functions,
