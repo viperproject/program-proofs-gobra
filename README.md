@@ -10,3 +10,6 @@ In each package, there are two kinds of files depending on their names:
 
 ## Current Status
 So far, we have translated the examples and exercises from Part 0 and are in the process of translating those from Part 1 and 2. These will be added gradually to this repository.
+
+## References
+- Egli, Timon. ["Translating Pedagogical Exercises to Viper’s Go Front-end."](https://ethz.ch/content/dam/ethz/special-interest/infk/chair-program-method/pm/documents/Education/Theses/Timon_Egli_BA_report.pdf) (2023).
