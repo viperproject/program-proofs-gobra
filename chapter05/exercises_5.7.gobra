@@ -29,7 +29,8 @@ pure func (t BYTree) ReverseColors() BYTree {
 }
 
 ghost
-ensures b.ReverseColors().ReverseColors() == b
+ensures   b.ReverseColors().ReverseColors() == b
+decreases len(b)
 func ReverseColorsInvolution(b BYTree) {
 	match b {
 		case BlueLeaf{}:
@@ -96,7 +97,8 @@ func OceanizeIdempotent(b BYTree) {
 // Exercise 5.14.
 
 ghost
-ensures 0 <= r
+ensures   0 <= r
+decreases len(t)
 pure func (t BYTree) BlueCount() (r int) {
 	return match t {
 		case BlueLeaf{}: 1

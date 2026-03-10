@@ -10,6 +10,7 @@ pure func Reduce(m, x int) int {
 ghost
 requires 0 <= m
 ensures Reduce(m, x) <= x
+decreases m
 func ReduceUpperBound(m, x  int) {
 	if m == 0 {
 		// trivial
@@ -24,6 +25,7 @@ func ReduceUpperBound(m, x  int) {
 ghost
 requires 0 <= m
 ensures x - 2 * m <= Reduce(m, x)
+decreases m
 func ReduceLowerBound(m, x  int) {
 	if m > 0 {
 		assert Reduce(m, x) == Reduce(m / 2, x + 1) - m

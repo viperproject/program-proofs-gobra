@@ -29,6 +29,7 @@ pure func AppendDecomposition(a List, b List, c List, d List) Unit {
  * Nonetheless, Gobra can still reason about the values
  * returned by this function with the lemmas below.
  */
+decreases _ // termination is assumed
 pure func F(x, y int) int
 
 /*

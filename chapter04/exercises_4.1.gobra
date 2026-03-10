@@ -18,6 +18,7 @@ pure func (t BYTree) ReverseColors() BYTree {
 
 // Exercise 4.2.
 ghost
+decreases
 func TestReverseColors() {
 	var a BYTree = Node{BlueLeaf{}, Node{BlueLeaf{}, YellowLeaf{}}}
 	var b BYTree = Node{YellowLeaf{}, Node{YellowLeaf{}, BlueLeaf{}}}

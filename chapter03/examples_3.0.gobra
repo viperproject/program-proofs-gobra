@@ -28,6 +28,9 @@ func Impossible(x int) (y int) {
 	return y
 }
 
+// Unlike Dafny, Gobra reports treats the lack of termination measures in
+// pure functions as a type-error.
+decreases
 pure func Dubious() int {
 	return 1 + Dubious()
 }

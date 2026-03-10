@@ -3,6 +3,7 @@ package chapter05
 ghost
 requires 0 <= x && 0 <= y
 ensures  0 <= r
+decreases y
 pure func Mult(x, y int) (r int) {
 	return y == 0 ? 0 : x + Mult(x, y - 1)
 }

@@ -13,6 +13,9 @@ func Triple(x int) (r int) {
 // Gobra allows declaring methods as ghost.
 ghost
 ensures a == 2 * x && b == 4 * x
+// In Gobra, all ghost functions must be marked as terminating using the
+// decreases clause. We explain this feature in file chapter03/examples_3.1.gobra.
+decreases
 func DoubleQuadruple(x int) (a int, b int) {
 	a = 2 * x
 	b = 2 * a
