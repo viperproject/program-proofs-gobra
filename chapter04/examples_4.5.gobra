@@ -4,7 +4,7 @@ package chapter04
 // generic definitions, i.e., we will instantiate the generic types with a concrete type
 // parameter (usually int, unless the examples demand something different).
 // We will update these examples when Gobra supports generics.
-type Tree adt {
+ghost type Tree adt {
 	TLeaf{
 		data Color
 	}

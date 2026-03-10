@@ -12,7 +12,7 @@ package chapter10
 ghost
 decreases
 pure func IsMin(y int, s mset[int]) bool {
-	return y in s && forall x int :: x in s ==> y <= x
+	return y elem s && forall x int :: x elem s ==> y <= x
 }
 
 /** Auxiliary Definitions **/

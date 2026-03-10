@@ -2,7 +2,7 @@ package chapter05
 
 // Exercise 5.11.
 
-type BYTree adt {
+ghost type BYTree adt {
 	BlueLeaf{}
 
 	YellowLeaf{}

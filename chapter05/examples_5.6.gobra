@@ -4,7 +4,7 @@ ghost
 requires 0 <= x && 0 <= y
 ensures  0 <= r
 pure func Mult(x, y int) (r int) {
-    return y == 0 ? 0 : x + Mult(x, y - 1)
+	return y == 0 ? 0 : x + Mult(x, y - 1)
 }
 
 ghost

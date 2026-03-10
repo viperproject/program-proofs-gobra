@@ -1,11 +1,11 @@
 package chapter04
 
-type Op adt {
+ghost type Op adt {
 	Add{}
 	Mul{}
 }
 
-type Expr adt {
+ghost type Expr adt {
 	Const{
 		num int
 	}
@@ -20,7 +20,7 @@ type Expr adt {
 	}
 }
 
-type List adt {
+ghost type List adt {
 	Nil{}
 
 	Cons{
@@ -37,7 +37,7 @@ pure func Eval(e Expr, env dict[string]int) (r int) {
 		case Const{?c}:
 			c
 		case Var{?s}:
-			s in domain(env) ? env[s] : 0
+			s elem domain(env) ? env[s] : 0
 		case ENode{?op, ?args}:
 			EvalList(args, op, env)
 	}

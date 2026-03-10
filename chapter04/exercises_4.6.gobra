@@ -6,7 +6,7 @@ decreases len(e)
 pure func GoodEnv(e Expr, env dict[string]int) bool {
 	return match e {
 		case Const{_}: true
-		case Var{?s}: s in domain(env)
+		case Var{?s}: s elem domain(env)
 		case ENode{_, ?args}:
 			GoodEnvList(args, env)
 	}

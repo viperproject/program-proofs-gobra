@@ -1,8 +1,8 @@
 package chapter10
 
-type PQueue = BraunTree
+ghost type PQueue = BraunTree
 
-type BraunTree adt {
+ghost type BraunTree adt {
 	Leaf {}
 
 	Node {

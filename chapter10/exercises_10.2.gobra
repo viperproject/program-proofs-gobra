@@ -3,7 +3,7 @@ package chapter10
 // Exercise 10.2.
 
 ghost
-requires pq.IsBinaryHeap() && y in pq.Elements()
+requires pq.IsBinaryHeap() && y elem pq.Elements()
 ensures pq.x <= y
 decreases len(pq)
 pure func (pq PQueue) BinaryHeapStoresMinimum(y int) Unit {
@@ -14,7 +14,7 @@ pure func (pq PQueue) BinaryHeapStoresMinimum(y int) Unit {
 			let _ := asserting(pq.Elements() == mset[int]{x} union l.Elements() union r.Elements()) in
 			let minL := l == Leaf{} ? x : l.x in
 			let minR := r == Leaf{} ? x : r.x in
-			let _ := (y in l.Elements()) ? l.BinaryHeapStoresMinimum(y) : Unit{} in
-			(y in r.Elements()) ? r.BinaryHeapStoresMinimum(y) : Unit{}
+			let _ := (y elem l.Elements()) ? l.BinaryHeapStoresMinimum(y) : Unit{} in
+			(y elem r.Elements()) ? r.BinaryHeapStoresMinimum(y) : Unit{}
 	}
 }
