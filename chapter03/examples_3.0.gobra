@@ -28,6 +28,13 @@ func Impossible(x int) (y int) {
 	return y
 }
 
+// Unlike Dafny, Gobra reports treats the lack of termination measures in
+// pure functions as a type-error.
+
+// This function does not terminate. To see the error that is produced,
+// remove the "trusted" annotation below.
+trusted
+decreases
 pure func Dubious() int {
 	return 1 + Dubious()
 }

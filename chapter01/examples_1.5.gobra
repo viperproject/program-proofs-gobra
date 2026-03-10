@@ -5,6 +5,9 @@ package chapter01
 // method contracts. Dafny functions can be translated to Gobra as pure
 // functions, which have the same properties in Gobra.
 pure
+// In Gobra, all pure functions must be marked as terminating using the
+// decreases clause. We explain this feature in file chapter03/examples_3.1.gobra.
+decreases
 func Average_v1(a, b int) int {
 	return (a + b) / 2
 }
@@ -19,6 +22,7 @@ func Truple_v7(x int) (r int) {
 
 pure
 requires 0 <= a && 0 <= b
+decreases
 func Average_v2(a, b int) int {
 	return (a + b) / 2
 }
@@ -35,6 +39,7 @@ func Triple_v8(x int) (r int) {
 // Dafny's predicates correspond to pure functions in Gobra which
 // have 'bool' as their return type. As such, IsEven is implemented as:
 pure
+decreases
 func IsEven(x int) bool {
 	return x % 2 == 0
 }

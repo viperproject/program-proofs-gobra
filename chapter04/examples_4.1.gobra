@@ -2,6 +2,10 @@ package chapter04
 
 ghost
 ensures 0 <= r
+// In Gobra, an ADT cannot be used directly as a termination measure. Instead,
+// we must use the `len` function of the ADT. The len function guarantees that
+// len(x) < len(y) if and only if x is structurally included in y.
+decreases len(t)
 // In general, we will define the operations on BYTree as methods, such that we can use
 // the "dot-syntax" to call the operations, e.g., to write t.BlueCount() instead of BlueCount(t).
 pure func (t BYTree) BlueCount_v1() (r int) {
@@ -16,7 +20,8 @@ pure func (t BYTree) BlueCount_v1() (r int) {
 }
 
 ghost
-ensures 0 <= r
+ensures   0 <= r
+decreases len(t)
 pure func (t BYTree) LeftDepth() (r int) {
 	return match t {
 		case BlueLeaf{}: 0

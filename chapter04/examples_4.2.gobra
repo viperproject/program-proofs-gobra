@@ -1,6 +1,7 @@
 package chapter04
 
 ghost
+decreases
 pure func (t BYTree) IsNode() bool {
 	return match t {
 		case BlueLeaf{}: false
@@ -12,6 +13,7 @@ pure func (t BYTree) IsNode() bool {
 ghost
 // The discriminator for variant X is called 'isX'.
 requires t.isNode
+decreases
 pure func (t BYTree) GetLeft() (r BYTree) {
 	return match t {
 		case Node{?left, _}: left
@@ -19,7 +21,8 @@ pure func (t BYTree) GetLeft() (r BYTree) {
 }
 
 ghost
-ensures 0 <= r
+ensures   0 <= r
+decreases len(t)
 pure func (t BYTree) BlueCount_v2() (r int) {
 	return t.isBlueLeaf ?
 		1 :
