@@ -41,6 +41,6 @@ decreases hi - lo
 // in an expression of the shape 'a ? b : c', which evaluates to 'b' if
 // 'a' is true, and evaluates to 'c' otherwise.
 pure func SeqSum(s seq[int], lo int, hi int) int {
-    return lo == hi ? 0 : s[lo] + SeqSum(s, lo + 1, hi)
+	return lo == hi ? 0 : s[lo] + SeqSum(s, lo + 1, hi)
 }
 

@@ -2,6 +2,8 @@ package chapter03
 
 // Exercise 3.13.
 
+// TODO: make this method verify
+trusted
 requires 0 <= a
 decreases a
 func Outer_v1(a int) {
