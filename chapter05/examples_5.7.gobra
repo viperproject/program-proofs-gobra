@@ -1,13 +1,13 @@
 package chapter05
 
-type Color adt {
+ghost type Color adt {
 	Blue{}
 	Yellow{}
 	Green{}
 	Red{}
 }
 
-type Tree adt {
+ghost type Tree adt {
 	TLeaf{
 		data Color
 	}

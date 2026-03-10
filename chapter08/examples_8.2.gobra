@@ -33,7 +33,7 @@ pure func MergeSortAux(xs ch6.List, length int) ch6.List {
  * To get around pure functions' limitations, we define the following struct
  * to be able to return a multiple values.
  */
-type PairOfLists struct {
+ghost type PairOfLists ghost struct {
 	left ch6.List
 	right ch6.List
 }

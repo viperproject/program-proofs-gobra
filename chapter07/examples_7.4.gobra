@@ -5,8 +5,11 @@ package chapter07
  * In particular, Gobra currently does not support returning multiple values from a pure function.
  * To work around this, a common approach is to return a struct that contains multiple fields.
  * In this example, we use a 'PairOfUnary' as the return type of 'DivMod'.
+ * Because this struct is meant to be used only in ghost contexts, we mark the type as ghost.
+ * Furthermore, the struct itself must be marked as ghost so that its fields can be of ghost
+ * type.
  */
-type PairOfUnary struct {
+ghost type PairOfUnary ghost struct {
 	a, b Unary
 }
 

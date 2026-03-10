@@ -1,13 +1,13 @@
 package chapter04
 
-type Color adt {
+ghost type Color adt {
 	Blue{}
 	Yellow{}
 	Green{}
 	Red{}
 }
 
-type ColoredTree adt {
+ghost type ColoredTree adt {
 	Leaf{
 		color Color
 	}

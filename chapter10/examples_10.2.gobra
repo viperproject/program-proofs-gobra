@@ -124,7 +124,7 @@ pure func (pq PQueue) InsertCorrect(y int) Unit {
 
 /** Section 10.2.3. **/
 
-type PairOfIntPQueue struct {
+ghost type PairOfIntPQueue ghost struct {
 	left int
 	right PQueue
 }

@@ -5,11 +5,11 @@ package chapter07
  */
 type Unit struct{}
 
-type Unary adt {
+ghost type Unary adt {
 
 	Zero {}
 
-   /*
+	/*
 	* In Gobra, the term 'pred' is a reserved keyword used to declare a predicate.
 	* A Gobra predicate should not be confused with a Dafny predicate. Gobra's
 	* predicates correspond to predicates in separation logic, which are used to abstract over

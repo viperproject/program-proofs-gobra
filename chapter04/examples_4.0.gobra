@@ -2,8 +2,9 @@ package chapter04
 
 // Go does not support ADTs. Nonetheless, these types are so useful that Gobra provides
 // a way to define them. Because it is a Gobra-only feature, ADTs cannot be compiled and thus,
-// they can only be used in specifications and ghost code.
-type BYTree adt {
+// they can only be used in specifications and ghost code. Notice that the type itself needs
+// to be marked as ghost.
+ghost type BYTree adt {
 	// Every variant of an ADT must receive a list of parameters surrounded by curly braces,
 	// even if that list is empty.
 	BlueLeaf{}

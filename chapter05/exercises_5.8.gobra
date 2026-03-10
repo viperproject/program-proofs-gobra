@@ -3,7 +3,7 @@ package chapter05
 // Exercise 5.16.
 
 ghost
-requires  n in domain(env)
+requires  n elem domain(env)
 ensures   Eval(e, env) == Eval(Substitute(e, n, env[n]), env)
 decreases
 func EvalEnv(e Expr, n string, env dict[string]int) {
@@ -20,7 +20,7 @@ func EvalEnv(e Expr, n string, env dict[string]int) {
 // Exercise 5.17.
 
 ghost
-requires  !(n in domain(env))
+requires  !(n elem domain(env))
 ensures   Eval(e, env) == Eval(Substitute(e, n, 0), env)
 decreases len(e)
 func EvalEnvDefault(e Expr, n string, env dict[string]int) {
@@ -33,7 +33,7 @@ func EvalEnvDefault(e Expr, n string, env dict[string]int) {
 }
 
 ghost
-requires  !(n in domain(env))
+requires  !(n elem domain(env))
 ensures   EvalList(args, op, env) == EvalList(SubstituteList(args, n, 0), op, env)
 decreases len(args)
 func EvalListEnvDefault(args List, op Op, n string, env dict[string]int) {
